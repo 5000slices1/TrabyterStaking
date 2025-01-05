@@ -8,8 +8,9 @@
     //import {page} from '$app/state';
     //import {Artemis} from './../artemis-web3-adapter/src/index.js';
 
-    export let data: any;
+    //export let data: any;
 
+    let data = $props();
     //let artemis;
     if (browser) {
         console.log(window.innerWidth);
@@ -72,12 +73,8 @@
 
 <div class="main-html-content">
     <p>Current version: {version}</p>
+    {@render data.children()}
 
-    {#if data?.children}
-        <!-- {#each data.children as child}
-            {child}
-        {/each} -->
-    {/if}
 
     <main class="main-body-content">
         <link
@@ -95,85 +92,89 @@
                 cellpadding="0"
                 style="width: 100%;height:100%"
             >
-                <tr>
-                    <td style="height: 0.2rem;"> </td>
-                </tr>
-                <tr>
-                    <td>
-                        <!-- Header section -->
-                        <header class="main-header">
-                            <div
-                                class="main-header-div"
-                                id="divMainMenu"
-                                style="vertical-align: top;"
-                            >
-                                <table
-                                    cellspacing="0"
-                                    cellpadding="0"
-                                    class="main-header table"
+                <tbody>
+                    <tr>
+                        <td style="height: 0.2rem;"> </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <!-- Header section -->
+                            <header class="main-header">
+                                <div
+                                    class="main-header-div"
+                                    id="divMainMenu"
                                     style="vertical-align: top;"
                                 >
-                                    <tr>
-                                        <td>
-                                            <div
-                                                style="
+                                    <table
+                                        cellspacing="0"
+                                        cellpadding="0"
+                                        class="main-header table"
+                                        style="vertical-align: top;"
+                                    >
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div
+                                                        style="
                                             padding-top: 0.1em;opacity: 0.85;"
-                                            >
-                                                <img
-                                                    src="../assets/icons/TraByterLogo.png"
-                                                    width="74rem"
-                                                    height="68rem"
-                                                    class="main-header-image"
-                                                    alt=""
+                                                    >
+                                                        <img
+                                                            src="../assets/icons/TraByterLogo.png"
+                                                            width="74rem"
+                                                            height="68rem"
+                                                            class="main-header-image"
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                </td>
+                                                <td
+                                                    style="width: 0.6em; min-width: 0.6em;"
                                                 />
-                                            </div>
-                                        </td>
-                                        <td
-                                            style="width: 0.6em; min-width: 0.6em;"
-                                        />
-                                        <td>
-                                            <button
-                                                class="main-header-button"
-                                                id="navButtonHome">Home</button
-                                            >
-                                        </td>
-                                        <td
-                                            style="width: 1.6em; min-width: 1.6em;"
-                                        />
+                                                <td>
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonHome"
+                                                        >Home</button
+                                                    >
+                                                </td>
+                                                <td
+                                                    style="width: 1.6em; min-width: 1.6em;"
+                                                />
 
-                                        <td>
-                                            <button
-                                                class="main-header-button"
-                                                id="navButtonApps"
-                                                >Staking-Pool</button
-                                            >
-                                        </td>
+                                                <td>
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonApps"
+                                                        >Staking-Pool</button
+                                                    >
+                                                </td>
 
-                                        <td
-                                            style="width: 1.6em; min-width: 1.6em;"
-                                        />
-                                        <td>
-                                            <button
-                                                class="main-header-button"
-                                                id="navButtonNews"
-                                                >Deposit</button
-                                            >
-                                        </td>
-                                        <td
-                                            style="width: 1.6em; min-width: 1.6em;"
-                                        >
-                                        </td><td>
-                                            <button
-                                                class="main-header-button"
-                                                id="navButtonNews"
-                                                >Information</button
-                                            >
-                                        </td>
-                                        <td
-                                            style="width: 1.6em; min-width: 1.6em;"
-                                        >
-                                        </td>
-                                        <!-- <td>
+                                                <td
+                                                    style="width: 1.6em; min-width: 1.6em;"
+                                                />
+                                                <td>
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonNews"
+                                                        >Deposit</button
+                                                    >
+                                                </td>
+                                                <td
+                                                    style="width: 1.6em; min-width: 1.6em;"
+                                                >
+                                                </td>
+                                                <td>
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonNews"
+                                                        >Information</button
+                                                    >
+                                                </td>
+                                                <td
+                                                    style="width: 1.6em; min-width: 1.6em;"
+                                                >
+                                                </td>
+                                                <!-- <td>
                     <button class="main-header-button" type="menu" id="navButtonWhitepaper">Whitepaper</button>
                 </td>
                 <td style="width: 1.6em; min-width: 1.6em;">
@@ -181,208 +182,220 @@
                 <td>
                     <button class="main-header-button" type="menu" id="navButtonRoadmap">Roadmap</button>
                 </td> -->
-                                        <td>
-                                            <!-- #region Wallet connection dropdown - hidden for now, because no usage at the moment -->
-                                            <div class="dropdown">
-                                                <button
-                                                    id="buttonWalletDropDown"
-                                                    type="submit"
-                                                    class="walletLoginButton"
-                                                    >Wallet Connection</button
-                                                >
+                                                <td>
+                                                    <!-- #region Wallet connection dropdown - hidden for now, because no usage at the moment -->
+                                                    <div class="dropdown">
+                                                        <button
+                                                            id="buttonWalletDropDown"
+                                                            type="submit"
+                                                            class="walletLoginButton"
+                                                            >Wallet Connection</button
+                                                        >
 
-                                                <div
-                                                    id="dropDownWalletMenu"
-                                                    class="wallet-control-not-logged-in"
-                                                >
-                                                    <table
-                                                        cellspacing="0"
-                                                        cellpadding="0"
-                                                    >
-                                                        <tr>
-                                                            <button
-                                                                id="loginStoic"
-                                                                type="submit"
-                                                                class="button-dropdownmenu"
-                                                                on:click={InitJavascript}
+                                                        <div
+                                                            id="dropDownWalletMenu"
+                                                            class="wallet-control-not-logged-in"
+                                                        >
+                                                            <table
+                                                                cellspacing="0"
+                                                                cellpadding="0"
                                                             >
-                                                                <img
-                                                                    src="../assets/icons/stoic.png"
-                                                                    width="22em"
-                                                                    height="22em"
-                                                                    alt="stoic"
-                                                                    style="float: left;margin-left: 0.4em;"
-                                                                />
-                                                                <div
-                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
-                                                                >
-                                                                    Connect with
-                                                                    Stoic
-                                                                </div>
-                                                            </button>
-                                                        </tr>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <button
+                                                                                id="loginStoic"
+                                                                                type="submit"
+                                                                                class="button-dropdownmenu"
+                                                                                on:click={InitJavascript}
+                                                                            >
+                                                                                <img
+                                                                                    src="../assets/icons/stoic.png"
+                                                                                    width="22em"
+                                                                                    height="22em"
+                                                                                    alt="stoic"
+                                                                                    style="float: left;margin-left: 0.4em;"
+                                                                                />
+                                                                                <div
+                                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
+                                                                                >
+                                                                                    Connect
+                                                                                    with
+                                                                                    Stoic
+                                                                                </div>
+                                                                            </button>
+                                                                        </td></tr
+                                                                    >
 
-                                                        <tr>
-                                                            <button
-                                                                id="loginPlug"
-                                                                type="submit"
-                                                                class="button-dropdownmenu"
-                                                                on:click={WalletLoginPlug}
-                                                            >
-                                                                <img
-                                                                    src="../assets/icons/plug.jpg"
-                                                                    alt="plug"
-                                                                    width="22em"
-                                                                    height="22em"
-                                                                    style="float: left;margin-left: 0.4em;"
-                                                                />
-                                                                <div
-                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
-                                                                >
-                                                                    Connect with
-                                                                    Plug
-                                                                </div>
-                                                            </button>
-                                                        </tr>
-                                                        <tr>
-                                                            <button
-                                                                id="logout"
-                                                                type="submit"
-                                                                class="button-dropdownmenu"
-                                                                on:click={WalletLogout}
-                                                            >
-                                                                <div
-                                                                    style="margin: auto;text-align: right;margin-right: 10px;  margin-top: 0px;"
-                                                                >
-                                                                    Log out
-                                                                </div>
-                                                            </button>
-                                                        </tr>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                            <!-- #endregion Wallet connection dropdown -->
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <button
+                                                                                id="loginPlug"
+                                                                                type="submit"
+                                                                                class="button-dropdownmenu"
+                                                                                on:click={WalletLoginPlug}
+                                                                            >
+                                                                                <img
+                                                                                    src="../assets/icons/plug.jpg"
+                                                                                    alt="plug"
+                                                                                    width="22em"
+                                                                                    height="22em"
+                                                                                    style="float: left;margin-left: 0.4em;"
+                                                                                />
+                                                                                <div
+                                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
+                                                                                >
+                                                                                    Connect
+                                                                                    with
+                                                                                    Plug
+                                                                                </div>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <button
+                                                                                id="logout"
+                                                                                type="submit"
+                                                                                class="button-dropdownmenu"
+                                                                                on:click={WalletLogout}
+                                                                            >
+                                                                                <div
+                                                                                    style="margin: auto;text-align: right;margin-right: 10px;  margin-top: 0px;"
+                                                                                >
+                                                                                    Log
+                                                                                    out
+                                                                                </div>
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <!-- #endregion Wallet connection dropdown -->
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                            <div></div>
-                        </header>
-                    </td>
-                </tr>
+                                <div></div>
+                            </header>
+                        </td>
+                    </tr>
 
-                <tr style="height: 100%;vertical-align: top;">
-                    <td>
-                        <div
-                            id="divMainContent"
-                            style="width: 100%; height: 100%; margin-top: 0.4em;"
-                        ></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <!-- <footer>
+                    <tr style="height: 100%;vertical-align: top;">
+                        <td>
+                            <div
+                                id="divMainContent"
+                                style="width: 100%; height: 100%; margin-top: 0.4em;"
+                            ></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <!-- <footer>
         <div class="footer-div" style="width: 100%;height: 5em;background-color:white;
 
     ">
         </div>
     </footer> -->
 
-                        <footer
-                            id="mainpage_footer"
-                            class="footer"
-                            style="
+                            <footer
+                                id="mainpage_footer"
+                                class="footer"
+                                style="
     font-size: 1.0em;width: calc(100% - 1em);
     height:4em;margin-top:1em;
     "
-                        >
-                            <div>
-                                Join Community: <a
-                                    style="color:rgb(172, 101, 15);"
-                                    target="_blank"
-                                    href="https://oc.app/community/ovkev-xiaaa-aaaar-asorq-cai/channel/333479041001113364768524958478479859764/?ref=tzol4-lqaaa-aaaaf-aanaq-cai"
-                                    >OpenChat</a
-                                >
-                                <div class="col-sm-5">
-                                    <ul
-                                        class="social_icon"
-                                        style="margin-left:-3.4em;"
+                            >
+                                <div>
+                                    Join Community: <a
+                                        style="color:rgb(172, 101, 15);"
+                                        target="_blank"
+                                        href="https://oc.app/community/ovkev-xiaaa-aaaar-asorq-cai/channel/333479041001113364768524958478479859764/?ref=tzol4-lqaaa-aaaaf-aanaq-cai"
+                                        >OpenChat</a
                                     >
-                                        <li>
-                                            <a
-                                                target="_blank"
-                                                href="https://www.trabyter.com"
-                                                >Trabyter.com</a
-                                            >
-                                        </li>
-                                        <li>
-                                            <a
-                                                target="_blank"
-                                                href="https://www.facebook.com/mysliceinfo"
-                                                ><i class="fa fa-facebook-f"
-                                                ></i></a
-                                            >
-                                        </li>
-                                        <li>
-                                            <a
-                                                target="_blank"
-                                                href="https://x.com/trabyter_apps"
-                                                ><i class="fa fa-twitter"
-                                                ></i></a
-                                            >
-                                        </li>
-                                        <li>
-                                            <a
-                                                target="_blank"
-                                                href="https://www.youtube.com/channel/UCErWBRjdOWo_hmHNqb4yxDg"
-                                                ><i
-                                                    class="fa fa-youtube-play"
-                                                    aria-hidden="true"
-                                                ></i></a
-                                            >
-                                        </li>
-                                        <li>
-                                            <a
-                                                target="_blank"
-                                                href="https://github.com/5000slices1?tab=repositories"
-                                                ><i
-                                                    class="fa fa-github"
-                                                    aria-hidden="true"
-                                                ></i></a
-                                            >
-                                        </li>
-                                        <li>
-                                            <a
-                                                target="_blank"
-                                                href="https://t.me/mysliceinfo"
-                                                ><i
-                                                    class="fa fa-telegram"
-                                                    aria-hidden="true"
-                                                ></i></a
-                                            >
-                                        </li>
-                                        <li>
-                                            <a
-                                                target="_blank"
-                                                href="https://www.instagram.com/5000slices"
-                                                ><i
-                                                    class="fa fa-instagram"
-                                                    aria-hidden="true"
-                                                ></i></a
-                                            >
-                                        </li>
-                                    </ul>
+                                    <div class="col-sm-5">
+                                        <ul
+                                            class="social_icon"
+                                            style="margin-left:-3.4em;"
+                                        >
+                                            <li>
+                                                <a
+                                                    target="_blank"
+                                                    href="https://www.trabyter.com"
+                                                    >Trabyter.com</a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    target="_blank"
+                                                    href="https://www.facebook.com/mysliceinfo"
+                                                    ><i class="fa fa-facebook-f"
+                                                    ></i></a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    target="_blank"
+                                                    href="https://x.com/trabyter_apps"
+                                                    ><i class="fa fa-twitter"
+                                                    ></i></a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    target="_blank"
+                                                    href="https://www.youtube.com/channel/UCErWBRjdOWo_hmHNqb4yxDg"
+                                                    ><i
+                                                        class="fa fa-youtube-play"
+                                                        aria-hidden="true"
+                                                    ></i></a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    target="_blank"
+                                                    href="https://github.com/5000slices1?tab=repositories"
+                                                    ><i
+                                                        class="fa fa-github"
+                                                        aria-hidden="true"
+                                                    ></i></a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    target="_blank"
+                                                    href="https://t.me/mysliceinfo"
+                                                    ><i
+                                                        class="fa fa-telegram"
+                                                        aria-hidden="true"
+                                                    ></i></a
+                                                >
+                                            </li>
+                                            <li>
+                                                <a
+                                                    target="_blank"
+                                                    href="https://www.instagram.com/5000slices"
+                                                    ><i
+                                                        class="fa fa-instagram"
+                                                        aria-hidden="true"
+                                                    ></i></a
+                                                >
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                        </footer>
-                    </td>
-                </tr>
-                <tr style="height: 0.2em;"> </tr>
+                            </footer>
+                        </td>
+                    </tr>
+                    <tr style="height: 0.2em;"> </tr>
+                </tbody>
             </table>
         </div>
     </main>
-    ^
 </div>
 
 <style>
