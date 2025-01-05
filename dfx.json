@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "TrabyterStaking_backend": {
+      "declarations": {
+        "node_compatibility": true
+      },
+      "main": "src/TrabyterStaking_backend/main.mo",
+      "type": "motoko"
+    },
+    "TrabyterStaking_frontend": {
+      "dependencies": [
+        "TrabyterStaking_backend"
+      ],
+      "source": [
+        "src/TrabyterStaking_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "TrabyterStaking_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
