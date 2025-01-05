@@ -72,9 +72,12 @@
 
 <div class="main-html-content">
     <p>Current version: {version}</p>
-    <!-- {#each data.children as child}
-        {child}
-    {/each} -->
+
+    {#if data?.children}
+        <!-- {#each data.children as child}
+            {child}
+        {/each} -->
+    {/if}
 
     <main class="main-body-content">
         <link
