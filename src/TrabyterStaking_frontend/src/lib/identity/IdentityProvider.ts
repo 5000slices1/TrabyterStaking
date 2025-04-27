@@ -41,6 +41,10 @@ export class IdentityProvider {
         return this.#_adapter;
     }
 
+    GetProvider() {
+        return this.#_adapter.provider;
+    }
+
     IsWalletConnected() {
         if (
             this.#_adapter.provider == null ||
@@ -114,6 +118,7 @@ export class IdentityProvider {
     GetAllCanisterIds() {
         const idArray = [];
         idArray.push('lfcgx-lyaaa-aaaag-allgq-cai');
+        idArray.push('ev57g-oqaaa-aaaai-aso6a-cai');
         return idArray;
     }
 

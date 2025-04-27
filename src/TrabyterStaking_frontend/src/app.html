@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" href="%sveltekit.assets%/favicon.ico" />
+        <meta name="viewport" content="width=device-width" />
+        <title>IC Hello Starter</title>
 
-<head>
-	<meta charset="utf-8" />
-	<link rel="icon" href="%sveltekit.assets%/favicon.ico" />
-	<meta name="viewport" content="width=device-width" />
-	<title>IC Hello Starter</title>
-	%sveltekit.head%
-</head>
+        <p>moin</p>
+        <img
+            src="/assets/icons/TraByterLogo.png"
+            width="74rem"
+            height="68rem"
+            alt=""
+        />
+        %sveltekit.head%
+    </head>
 
-<body data-sveltekit-preload-data="hover">
-	<div style="display: contents">%sveltekit.body%</div>
-</body>
-
+    <body data-sveltekit-preload-data="hover">
+        <div>
+            <div style="display: contents">%sveltekit.body%</div>
+        </div>
+    </body>
 </html>
