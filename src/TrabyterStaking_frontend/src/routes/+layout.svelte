@@ -6,13 +6,17 @@
     import {WalletTypes} from '$lib/identity/UsersIdentity';
     import {version} from '$app/environment';
     import './../app.css';
-    //import {boneIdlFactory} from '$lib/interfaces/InterfaceBoneMiner';
-    //import type {DogContext} from '$lib/interfaces/InterfaceBoneMiner';
+    import {goto} from '$app/navigation';
     //import {page} from '$app/state';
     //import {Artemis} from './../artemis-web3-adapter/src/index.js';
 
     //export let data: any;
     import IconTrabyter from '$lib/assets/icons/TraByterLogo.png';
+    import Logo2 from '/logo2.svg';
+    import {Console} from 'console';
+
+    const canisterId = process.env.CANISTER_ID_TRABYTERSTAKING_FRONTEND;
+
     let data = $props();
     //let artemis;
     if (browser) {
@@ -37,7 +41,7 @@
             //artemis = new Artemis();
 
             //var artemisPath = './../artemis-web3-adapter/src/index.js';
-            // import(artemisPath).then((moduhttp://127.0.0.1:4943/?canisterId=bd3sg-teaaa-aaaaa-qaaba-caile) => {
+            // import(artemisPath).then((module) => {
             //     artemis = new Artemis.Artemis();
             // });
             console.log('window');
@@ -63,6 +67,16 @@
         if (browser) {
             await GlobalTypes.IdentityProvider.Logout();
         }
+    }
+
+    function navigateToHomePage() {
+        console.log('navigateToHomePage');
+        goto('/?canisterId=' + canisterId);
+    }
+
+    function navigateToDepositPage() {
+        console.log('navigateToDepositPage');
+        goto('/pages/deposit?canisterId=' + canisterId);
     }
 
     console.log('Hello from !');
@@ -132,8 +146,7 @@
                                                         class="main-header-button"
                                                         id="navButtonHome"
                                                         onclick={() =>
-                                                            (window.location.href =
-                                                                '/')}
+                                                            navigateToHomePage()}
                                                         >Home</button
                                                     >
                                                 </td>
@@ -158,8 +171,7 @@
                                                         class="main-header-button"
                                                         id="navButtonDeposit"
                                                         onclick={() =>
-                                                            (window.location.href =
-                                                                '/pages/deposit')}
+                                                            navigateToDepositPage()}
                                                         >Deposit</button
                                                     >
                                                 </td>

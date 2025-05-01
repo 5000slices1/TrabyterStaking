@@ -3,5 +3,4 @@
     import Icon from '$lib/assets/icons/TraByterLogo.png';
 </script>
 
-<p>This is page Deposit2</p>
-<img src={Icon} width="74rem" height="68rem" class="main-header-image" alt="" />
+<p>This is page Deposit. Coming Soon.</p>
