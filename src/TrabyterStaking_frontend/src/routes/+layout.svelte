@@ -24,8 +24,6 @@
     }
     //import {Artemis} from 'artemis-web3-adapter';
 
-    //let bla: string = 'hello';http://127.0.0.1:4943/?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai
-
     //let artemis = new Artemis();
 
     onMount(async () => {

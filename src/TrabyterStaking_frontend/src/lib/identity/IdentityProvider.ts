@@ -117,6 +117,9 @@ export class IdentityProvider {
 
     GetAllCanisterIds() {
         const idArray = [];
+        //TODO: add canister ids
+        // The current ones are just place-holders, yet to be replaced
+
         idArray.push('lfcgx-lyaaa-aaaag-allgq-cai');
         idArray.push('ev57g-oqaaa-aaaai-aso6a-cai');
         return idArray;
