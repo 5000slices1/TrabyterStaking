@@ -1,6 +1,8 @@
 <script lang="ts">
     //import './../../../app.css';
     import Icon from '$lib/assets/icons/TraByterLogo.png';
+    let data = $props();
 </script>
 
-<p>This is page Deposit. Coming Soon.</p>
+<header>This is my deposit header</header>
+{@render data.children()}
