@@ -38,8 +38,14 @@ endif
 
 #	npm update
 	sudo npm i @dfinity/ledger-icp
-	sudo npm i @dfinity/agent @dfinity/candid @dfinity/principal @dfinity/utils @dfinity/nns-proto
+	sudo npm i @dfinity/principal
+	sudo npm i @dfinity/candid
+
+	sudo npm i @dfinity/agent
+	sudo npm i @dfinity/utils
+	sudo npm i @dfinity/nns-proto
 	sudo npm i artemis-web3-adapter @dfinity/identity @dfinity/identity-secp256k1 crypto-browserify
 	sudo npm i browserify-zlib @dfinity/auth-client
 	sudo npm install --save isomorphic-fetch
 	sudo npm install svelte-preprocess
+	@sudo chmod -R go+rw src/TrabyterStaking_frontend/.svelte-kit
