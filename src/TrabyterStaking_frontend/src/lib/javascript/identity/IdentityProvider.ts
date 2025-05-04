@@ -1,8 +1,8 @@
 import {Principal} from '@dfinity/principal';
 
-import {Artemis} from '../../artemis-web3-adapter/src/index.js';
+import {Artemis} from '../../../artemis-web3-adapter/src/index.js';
 import {PubSub} from '../utils/pubsub';
-import {UsersIdentity, WalletTypes} from './UsersIdentity';
+import {UsersIdentity, WalletTypes} from './UsersIdentity.js';
 
 export class IdentityProvider {
     #_init_done: boolean;

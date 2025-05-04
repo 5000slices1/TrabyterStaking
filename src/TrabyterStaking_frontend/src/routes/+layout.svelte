@@ -2,8 +2,8 @@
     //import adapter from '@sveltejs/adapter-static';
     import {browser} from '$app/environment';
     import {onMount} from 'svelte';
-    import {GlobalTypes} from './../lib/global/GlobalTypes';
-    import {WalletTypes} from '$lib/identity/UsersIdentity';
+    import {GlobalTypes} from '../lib/javascript/global/GlobalTypes';
+    import {WalletTypes} from '$lib/javascript/identity/UsersIdentity';
     import {version} from '$app/environment';
     import './../app.css';
     import {goto} from '$app/navigation';
@@ -16,15 +16,11 @@
     import {Console} from 'console';
 
     const canisterId = process.env.CANISTER_ID_TRABYTERSTAKING_FRONTEND;
-
     let data = $props();
-    //let artemis;
+
     if (browser) {
         console.log(window.innerWidth);
     }
-    //import {Artemis} from 'artemis-web3-adapter';
-
-    //let artemis = new Artemis();
 
     onMount(async () => {
         console.log('the component has mounted');
@@ -33,28 +29,13 @@
             if (GlobalTypes.IsInitDone()) {
                 return;
             }
-            await InitAsync();
-
-            //await GlobalTypes.InitAsync();
-            //artemis = new Artemis();
-
-            //var artemisPath = './../artemis-web3-adapter/src/index.js';
-            // import(artemisPath).then((module) => {
-            //     artemis = new Artemis.Artemis();
-            // });
+            await GlobalTypes.InitAsync();
             console.log('window');
             console.log(window);
         }
-        //await GlobalTypes.InitAsync();
         console.log('start done');
     });
 
-    async function InitAsync() {
-        if (GlobalTypes.IsInitDone()) {
-            return;
-        }
-        await GlobalTypes.InitAsync();
-    }
     async function WalletLoginPlug() {
         if (browser) {
             await GlobalTypes.IdentityProvider.Login(WalletTypes.plug);
@@ -67,6 +48,31 @@
         }
     }
 
+    async function OnButtonWalletDropDownClicked() {
+        console.log('OnButtonWalletDropDownClicked');
+        if (browser) {
+            const element = document.getElementById('dropDownWalletMenu');
+            if (element) {
+                element.classList.add('show');
+            }
+        }
+    }
+    // Close the dropdown menu if the user clicks outside of it
+    if (browser) {
+        window.onclick = function (event) {
+            var targetElement = event?.target as HTMLElement;
+            if (
+                targetElement == null ||
+                !targetElement.className.toString().match('walletLoginButton')
+            ) {
+                const element = document.getElementById('dropDownWalletMenu');
+                if (element != null && element.classList.contains('show')) {
+                    element.classList.remove('show');
+                }
+            }
+        };
+    }
+
     function navigateToHomePage() {
         console.log('navigateToHomePage');
         goto('/?canisterId=' + canisterId);
@@ -77,9 +83,13 @@
         goto('/pages/deposit?canisterId=' + canisterId);
     }
 
-    console.log('Hello from !');
-    function InitJavascript() {
-        console.log('Hello from Svelte!');
+    function navigateToInformationPage() {
+        console.log('navigateToInformationPage');
+        goto('/pages/information?canisterId=' + canisterId);
+    }
+    function navigateToStakingPoolPage() {
+        console.log('navigateToStakingPoolPage');
+        goto('/pages/stakingpool?canisterId=' + canisterId);
     }
 </script>
 
@@ -155,7 +165,9 @@
                                                 <td>
                                                     <button
                                                         class="main-header-button"
-                                                        id="navButtonApps"
+                                                        id="navButtonStakingPool"
+                                                        onclick={() =>
+                                                            navigateToStakingPoolPage()}
                                                         >Staking-Pool</button
                                                     >
                                                 </td>
@@ -180,7 +192,9 @@
                                                 <td>
                                                     <button
                                                         class="main-header-button"
-                                                        id="navButtonNews"
+                                                        id="navButtonInformation"
+                                                        onclick={() =>
+                                                            navigateToInformationPage()}
                                                         >Information</button
                                                     >
                                                 </td>
@@ -188,14 +202,6 @@
                                                     style="width: 1.6em; min-width: 1.6em;"
                                                 >
                                                 </td>
-                                                <!-- <td>
-                    <button class="main-header-button" type="menu" id="navButtonWhitepaper">Whitepaper</button>
-                </td>
-                <td style="width: 1.6em; min-width: 1.6em;">
-                </td>
-                <td>
-                    <button class="main-header-button" type="menu" id="navButtonRoadmap">Roadmap</button>
-                </td> -->
                                                 <td>
                                                     <!-- #region Wallet connection dropdown - hidden for now, because no usage at the moment -->
                                                     <div class="dropdown">
@@ -203,6 +209,7 @@
                                                             id="buttonWalletDropDown"
                                                             type="submit"
                                                             class="walletLoginButton"
+                                                            onclick={OnButtonWalletDropDownClicked}
                                                             >Wallet Connection</button
                                                         >
 
@@ -215,32 +222,6 @@
                                                                 cellpadding="0"
                                                             >
                                                                 <tbody>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <button
-                                                                                id="loginStoic"
-                                                                                type="submit"
-                                                                                class="button-dropdownmenu"
-                                                                                onclick={InitJavascript}
-                                                                            >
-                                                                                <img
-                                                                                    src="../assets/icons/stoic.png"
-                                                                                    width="22em"
-                                                                                    height="22em"
-                                                                                    alt="stoic"
-                                                                                    style="float: left;margin-left: 0.4em;"
-                                                                                />
-                                                                                <div
-                                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
-                                                                                >
-                                                                                    Connect
-                                                                                    with
-                                                                                    Stoic
-                                                                                </div>
-                                                                            </button>
-                                                                        </td></tr
-                                                                    >
-
                                                                     <tr>
                                                                         <td>
                                                                             <button
@@ -277,8 +258,7 @@
                                                                                 <div
                                                                                     style="margin: auto;text-align: right;margin-right: 10px;  margin-top: 0px;"
                                                                                 >
-                                                                                    Log
-                                                                                    out
+                                                                                    Logout
                                                                                 </div>
                                                                             </button>
                                                                         </td>
@@ -311,13 +291,6 @@
                     </tr>
                     <tr>
                         <td>
-                            <!-- <footer>
-        <div class="footer-div" style="width: 100%;height: 5em;background-color:white;
-
-    ">
-        </div>
-    </footer> -->
-
                             <footer
                                 id="mainpage_footer"
                                 class="footer"
