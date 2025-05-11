@@ -1,28 +1,29 @@
 import {Principal} from '@dfinity/principal';
 
 import {Artemis} from '../../../artemis-web3-adapter/src/index.js';
+import {ModelUsersIdentity} from '../Abstractions/Identity/ModelUsersIdentity.js';
+import {ModelWalletTypes} from '../Abstractions/Identity/ModelWalletTypes.js';
 import {PubSub} from '../utils/pubsub';
-import {UsersIdentity, WalletTypes} from './UsersIdentity.js';
 
 export class IdentityProvider {
     #_init_done: boolean;
     #_plugWalletConnected: boolean;
     #_adapter: any;
     #_connectionObject: {whitelist: string[]; host: string} | undefined;
-    #_lastLoginWalletType: WalletTypes;
+    #_lastLoginWalletType: ModelWalletTypes;
     #_inside_login: boolean;
     #_inside_logout: boolean;
 
     //The users identity
-    #_usersIdentity: UsersIdentity;
+    #_usersIdentity: ModelUsersIdentity;
 
     constructor() {
-        this.#_usersIdentity = new UsersIdentity();
+        this.#_usersIdentity = new ModelUsersIdentity();
         //this.#_adapter = new this.TypeArtemis();
         this.#_adapter = new Artemis();
         this.#_init_done = false;
         this.#_plugWalletConnected = false;
-        this.#_lastLoginWalletType = WalletTypes.NoWallet;
+        this.#_lastLoginWalletType = ModelWalletTypes.NoWallet;
         this.#_inside_login = false;
         this.#_inside_logout = false;
     }
@@ -82,13 +83,13 @@ export class IdentityProvider {
             ) {
                 switch (connectedWalletInfo.id) {
                     case 'plug':
-                        this.#_usersIdentity.Type = WalletTypes.plug;
+                        this.#_usersIdentity.Type = ModelWalletTypes.plug;
                         break;
                     case 'stoic':
-                        this.#_usersIdentity.Type = WalletTypes.stoic;
+                        this.#_usersIdentity.Type = ModelWalletTypes.stoic;
                         break;
                     case 'dfinity':
-                        this.#_usersIdentity.Type = WalletTypes.dfinity;
+                        this.#_usersIdentity.Type = ModelWalletTypes.dfinity;
                         break;
                     default:
                         return;
@@ -127,7 +128,7 @@ export class IdentityProvider {
 
     //This method is called when user identiy (inside plug wallet) is switched
     async OnPlugUserIdentitySwitched() {
-        await this.Login(WalletTypes.plug);
+        await this.Login(ModelWalletTypes.plug);
     }
 
     async ReInitConnectionObject() {
@@ -173,7 +174,7 @@ export class IdentityProvider {
     }
 
     async ReLogin() {
-        if (this.#_lastLoginWalletType == WalletTypes.NoWallet) {
+        if (this.#_lastLoginWalletType == ModelWalletTypes.NoWallet) {
             return;
         }
 
@@ -181,7 +182,10 @@ export class IdentityProvider {
         await this.Login(this.#_lastLoginWalletType, true);
     }
 
-    async Login(walletType: WalletTypes, sendEventUserIdentyChanged = true) {
+    async Login(
+        walletType: ModelWalletTypes,
+        sendEventUserIdentyChanged = true,
+    ) {
         if (this.#_inside_login == true) {
             return;
         }
@@ -190,15 +194,15 @@ export class IdentityProvider {
         try {
             var walletName = '';
             switch (walletType) {
-                case WalletTypes.plug:
+                case ModelWalletTypes.plug:
                     {
                         walletName = 'plug';
                     }
                     break;
-                case WalletTypes.stoic:
+                case ModelWalletTypes.stoic:
                     walletName = 'stoic';
                     break;
-                case WalletTypes.dfinity:
+                case ModelWalletTypes.dfinity:
                     walletName = 'dfinity';
                     break;
                 default:
@@ -217,7 +221,7 @@ export class IdentityProvider {
             console.log(this.#_connectionObject);
             await this.#_adapter.connect(walletName, this.#_connectionObject);
 
-            if (walletType == WalletTypes.plug) {
+            if (walletType == ModelWalletTypes.plug) {
                 this.#_plugWalletConnected = true;
             }
         } catch (error) {

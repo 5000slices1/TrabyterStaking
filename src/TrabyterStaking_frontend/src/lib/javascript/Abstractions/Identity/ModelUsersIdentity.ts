@@ -1,18 +1,13 @@
 import {Principal} from '@dfinity/principal';
 
-export enum WalletTypes {
-    'NoWallet',
-    'plug',
-    'stoic',
-    'dfinity',
-}
+import {ModelWalletTypes} from './ModelWalletTypes';
 
-export class UsersIdentity {
+export class ModelUsersIdentity {
     //Connected, true or false
     IsConnected: boolean;
 
     //Type of the connection. (stoic, plug, dfinity)
-    Type: WalletTypes;
+    Type: ModelWalletTypes;
 
     //Display-name of the connected wallet (Stoic, Plug, Dfinity)
     Name: string;
@@ -25,7 +20,7 @@ export class UsersIdentity {
 
     constructor() {
         this.IsConnected = false;
-        this.Type = WalletTypes.NoWallet;
+        this.Type = ModelWalletTypes.NoWallet;
         this.Name = '';
         this.AccountPrincipalText = '';
         this.AccountPrincipal = Principal.anonymous();
@@ -33,7 +28,7 @@ export class UsersIdentity {
 
     Reset() {
         this.IsConnected = false;
-        this.Type = WalletTypes.NoWallet;
+        this.Type = ModelWalletTypes.NoWallet;
         this.Name = '';
         this.AccountPrincipalText = '';
         this.AccountPrincipal = Principal.anonymous();

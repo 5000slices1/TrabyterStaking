@@ -3,7 +3,7 @@
     import {browser} from '$app/environment';
     import {onMount} from 'svelte';
     import {GlobalTypes} from '../lib/javascript/global/GlobalTypes';
-    import {WalletTypes} from '$lib/javascript/identity/UsersIdentity';
+    import {ModelWalletTypes} from '$lib/javascript/Abstractions/Identity/ModelWalletTypes';
     import {version} from '$app/environment';
     import './../app.css';
     import {goto} from '$app/navigation';
@@ -38,7 +38,7 @@
 
     async function WalletLoginPlug() {
         if (browser) {
-            await GlobalTypes.IdentityProvider.Login(WalletTypes.plug);
+            await GlobalTypes.IdentityProvider.Login(ModelWalletTypes.plug);
         }
     }
 
