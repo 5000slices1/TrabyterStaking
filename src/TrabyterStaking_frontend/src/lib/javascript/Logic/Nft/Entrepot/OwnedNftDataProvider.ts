@@ -31,6 +31,11 @@ export class OwnedNftDataProvider {
                     item.metadata,
                 ),
         );
+        // Sort nftItems by the boolean value 'isListed'
+        nftItems = nftItems.sort(
+            (a, b) => Number(b.isListed) - Number(a.isListed),
+        );
+        this.items = nftItems;
     }
 
     private GetNewOwnedNftInformationItem(
@@ -53,7 +58,7 @@ export class OwnedNftDataProvider {
         }
 
         //Addional most important NFT-metadata, so we do not need to map every time
-        const nftMetadata = metadataProvider.getNftById(id);
+        const nftMetadata = metadataProvider.getNftByCanisterId(canister);
         if (nftMetadata) {
             newItem.collectionName = nftMetadata.name;
             newItem.collectionId = nftMetadata.id;
@@ -65,6 +70,16 @@ export class OwnedNftDataProvider {
             newItem.collectionBannerUrl = nftMetadata.banner;
             newItem.collectionCanisterOwner = nftMetadata.owner?.toString();
             newItem.collectionStandard = nftMetadata.standard?.toString();
+        } else {
+            console.error(
+                `NFT metadata not found for ID: ${canister}. Please check the ID or update the metadata provider.`,
+            );
+        }
+
+        if (newItem.price === undefined || newItem.price === null) {
+            newItem.isListed = false;
+        } else {
+            newItem.isListed = newItem.price > 0;
         }
 
         return newItem;

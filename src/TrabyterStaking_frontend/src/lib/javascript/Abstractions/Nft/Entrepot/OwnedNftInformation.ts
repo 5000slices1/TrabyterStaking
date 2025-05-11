@@ -5,6 +5,7 @@ export class OwnedNftInformation {
     price: number | undefined;
     time: number | undefined;
     metadata: string | undefined;
+    isListed: boolean;
 
     //Addional most important NFt-metadata, so we do not need to map every time
     collectionName: string | undefined;
@@ -18,13 +19,6 @@ export class OwnedNftInformation {
     collectionCanisterOwner: string | undefined;
     collectionStandard: string | undefined;
 
-    IsListed(): boolean {
-        if (this.price === undefined || this.price === null) {
-            return false;
-        }
-        return this.price > 0;
-    }
-
     public constructor() {
         this.id = '';
         this.owner = '';
@@ -32,6 +26,7 @@ export class OwnedNftInformation {
         this.price = 0.0;
         this.time = 0;
         this.metadata = '';
+        this.isListed = false;
 
         //Addional most important NFt-metadata, so we do not need to map every time
         this.collectionName = '';

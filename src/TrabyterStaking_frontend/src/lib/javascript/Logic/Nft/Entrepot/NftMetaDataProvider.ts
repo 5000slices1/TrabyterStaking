@@ -45,7 +45,7 @@ export class NftMetadataProvider {
      * @param id - The unique identifier of the NFT.
      * @returns The NFT metadata object if found, otherwise `undefined`.
      */
-    public getNftById(id: string | undefined): NftMetadata | undefined {
+    public getNftByCanisterId(id: string | undefined): NftMetadata | undefined {
         if (id === undefined) {
             return undefined;
         }
@@ -126,6 +126,8 @@ export class NftMetadataProvider {
                         item.royalty,
                     ),
             );
+            console.log('Fetched NFT metadata:');
+            console.log(nfts);
             this.nftsMetadata = new NftsMetadata(nfts);
         } catch (error) {
             console.error('Error fetching NFT metadata:', error);

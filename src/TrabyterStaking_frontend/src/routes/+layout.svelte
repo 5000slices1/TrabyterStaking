@@ -30,8 +30,6 @@
                 return;
             }
             await MainClass.InitAsync();
-            console.log('window');
-            console.log(window);
         }
         console.log('start done');
     });
