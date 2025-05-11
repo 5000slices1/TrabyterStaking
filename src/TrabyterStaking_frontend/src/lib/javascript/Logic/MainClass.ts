@@ -1,6 +1,6 @@
-import {IdentityProvider} from '../identity/IdentityProvider';
+import {IdentityProvider} from './identity/IdentityProvider';
 
-class InternalGlobalTypes {
+class InternalMainClass {
     #init_done: boolean = false;
     IdentityProvider: IdentityProvider;
 
@@ -22,4 +22,4 @@ class InternalGlobalTypes {
     }
 }
 
-export const GlobalTypes = new InternalGlobalTypes();
+export const MainClass = new InternalMainClass();

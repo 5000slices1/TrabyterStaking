@@ -2,7 +2,7 @@
     //import adapter from '@sveltejs/adapter-static';
     import {browser} from '$app/environment';
     import {onMount} from 'svelte';
-    import {GlobalTypes} from '../lib/javascript/global/GlobalTypes';
+    import {MainClass} from '../lib/javascript/Logic/MainClass';
     import {ModelWalletTypes} from '$lib/javascript/Abstractions/Identity/ModelWalletTypes';
     import {version} from '$app/environment';
     import './../app.css';
@@ -26,10 +26,10 @@
         console.log('the component has mounted');
         console.log('start init');
         if (browser) {
-            if (GlobalTypes.IsInitDone()) {
+            if (MainClass.IsInitDone()) {
                 return;
             }
-            await GlobalTypes.InitAsync();
+            await MainClass.InitAsync();
             console.log('window');
             console.log(window);
         }
@@ -38,13 +38,13 @@
 
     async function WalletLoginPlug() {
         if (browser) {
-            await GlobalTypes.IdentityProvider.Login(ModelWalletTypes.plug);
+            await MainClass.IdentityProvider.Login(ModelWalletTypes.plug);
         }
     }
 
     async function WalletLogout() {
         if (browser) {
-            await GlobalTypes.IdentityProvider.Logout();
+            await MainClass.IdentityProvider.Logout();
         }
     }
 

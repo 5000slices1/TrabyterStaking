@@ -1,67 +1,51 @@
 import {Principal} from '@dfinity/principal';
 
-import {Artemis} from '../../../artemis-web3-adapter/src/index.js';
-import {ModelUsersIdentity} from '../Abstractions/Identity/ModelUsersIdentity.js';
-import {ModelWalletTypes} from '../Abstractions/Identity/ModelWalletTypes.js';
-import {PubSub} from '../utils/pubsub';
+import {ModelIdentityProvider} from '../../Abstractions/Identity/ModelIdentityProvider.js';
+import {ModelWalletTypes} from '../../Abstractions/Identity/ModelWalletTypes.js';
+import {PubSub} from '../utils/pubsub.js';
 
 export class IdentityProvider {
-    #_init_done: boolean;
-    #_plugWalletConnected: boolean;
-    #_adapter: any;
-    #_connectionObject: {whitelist: string[]; host: string} | undefined;
-    #_lastLoginWalletType: ModelWalletTypes;
-    #_inside_login: boolean;
-    #_inside_logout: boolean;
-
-    //The users identity
-    #_usersIdentity: ModelUsersIdentity;
+    #_model: ModelIdentityProvider;
 
     constructor() {
-        this.#_usersIdentity = new ModelUsersIdentity();
-        //this.#_adapter = new this.TypeArtemis();
-        this.#_adapter = new Artemis();
-        this.#_init_done = false;
-        this.#_plugWalletConnected = false;
-        this.#_lastLoginWalletType = ModelWalletTypes.NoWallet;
-        this.#_inside_login = false;
-        this.#_inside_logout = false;
+        this.#_model = new ModelIdentityProvider();
     }
 
     //Connect the users wallet
     Connect() {
-        this.#_usersIdentity.IsConnected = true;
+        this.#_model.UsersIdentity.IsConnected = true;
     }
 
     //Disconnect the users wallet
     Disconnect() {
-        this.#_usersIdentity.Reset();
+        this.#_model.UsersIdentity.Reset();
     }
 
     GetAdapter() {
-        return this.#_adapter;
+        return this.#_model.Adapter;
     }
 
     GetProvider() {
-        return this.#_adapter.provider;
+        return this.#_model.Adapter.provider;
     }
 
     IsWalletConnected() {
         if (
-            this.#_adapter.provider == null ||
-            this.#_adapter.provider == false
+            this.#_model.Adapter.provider == null ||
+            this.#_model.Adapter.provider == false
         ) {
             return false;
         }
 
-        let connectedWalletInfo: any = this.#_adapter?.connectedWalletInfo;
+        let connectedWalletInfo: any =
+            this.#_model.Adapter?.connectedWalletInfo;
         if (connectedWalletInfo == null || connectedWalletInfo == undefined) {
             return false;
         }
 
         if (
             connectedWalletInfo.id == 'plug' &&
-            this.#_plugWalletConnected == false
+            this.#_model.PlugWalletConnected == false
         ) {
             return false;
         }
@@ -70,42 +54,45 @@ export class IdentityProvider {
     }
 
     async #UserIdentityChanged() {
-        this.#_usersIdentity.Reset();
+        this.#_model.UsersIdentity.Reset();
         try {
             if (this.IsWalletConnected() == false) {
                 return;
             }
 
-            let connectedWalletInfo: any = this.#_adapter?.connectedWalletInfo;
+            let connectedWalletInfo: any =
+                this.#_model.Adapter?.connectedWalletInfo;
             if (
                 connectedWalletInfo != null &&
                 connectedWalletInfo != undefined
             ) {
                 switch (connectedWalletInfo.id) {
                     case 'plug':
-                        this.#_usersIdentity.Type = ModelWalletTypes.plug;
+                        this.#_model.UsersIdentity.Type = ModelWalletTypes.plug;
                         break;
                     case 'stoic':
-                        this.#_usersIdentity.Type = ModelWalletTypes.stoic;
+                        this.#_model.UsersIdentity.Type =
+                            ModelWalletTypes.stoic;
                         break;
                     case 'dfinity':
-                        this.#_usersIdentity.Type = ModelWalletTypes.dfinity;
+                        this.#_model.UsersIdentity.Type =
+                            ModelWalletTypes.dfinity;
                         break;
                     default:
                         return;
                 }
-                let principalText: string = this.#_adapter
+                let principalText: string = this.#_model.Adapter
                     ?.principalId as string;
                 let principal: Principal = Principal.fromText(principalText);
 
-                this.#_usersIdentity.Name = connectedWalletInfo.name;
-                this.#_usersIdentity.AccountPrincipalText = principalText;
-                this.#_usersIdentity.AccountPrincipal = principal;
+                this.#_model.UsersIdentity.Name = connectedWalletInfo.name;
+                this.#_model.UsersIdentity.AccountPrincipalText = principalText;
+                this.#_model.UsersIdentity.AccountPrincipal = principal;
                 //let provider = this.#_adapter?.provider;
-                this.#_usersIdentity.IsConnected = true;
+                this.#_model.UsersIdentity.IsConnected = true;
 
                 console.log('UserIdentityChanged:');
-                console.log(this.#_usersIdentity);
+                console.log(this.#_model.UsersIdentity);
             } else {
                 return;
             }
@@ -140,7 +127,7 @@ export class IdentityProvider {
             host: 'https://icp0.io/',
         };
 
-        this.#_connectionObject = connectedObj;
+        this.#_model.ConnectionObject = connectedObj;
 
         // var canisterIds = this.WalletsProvider.GetAllCanisterIds();
         // canisterIds.push(this.SwapAppPrincipalText);
@@ -170,27 +157,27 @@ export class IdentityProvider {
         } catch (error) {
             console.log(error);
         }
-        this.#_init_done = true;
+        this.#_model.Init_done = true;
     }
 
     async ReLogin() {
-        if (this.#_lastLoginWalletType == ModelWalletTypes.NoWallet) {
+        if (this.#_model.LastLoginWalletType == ModelWalletTypes.NoWallet) {
             return;
         }
 
         await this.Logout(false);
-        await this.Login(this.#_lastLoginWalletType, true);
+        await this.Login(this.#_model.LastLoginWalletType, true);
     }
 
     async Login(
         walletType: ModelWalletTypes,
         sendEventUserIdentyChanged = true,
     ) {
-        if (this.#_inside_login == true) {
+        if (this.#_model.Inside_login == true) {
             return;
         }
-        this.#_inside_login = true;
-        this.#_lastLoginWalletType = walletType;
+        this.#_model.Inside_login = true;
+        this.#_model.LastLoginWalletType = walletType;
         try {
             var walletName = '';
             switch (walletType) {
@@ -218,16 +205,19 @@ export class IdentityProvider {
             console.log('IdentityProvider.Login walletType:');
             console.log(walletType);
             console.log('ConnectionObject:');
-            console.log(this.#_connectionObject);
-            await this.#_adapter.connect(walletName, this.#_connectionObject);
+            console.log(this.#_model.ConnectionObject);
+            await this.#_model.Adapter.connect(
+                walletName,
+                this.#_model.ConnectionObject,
+            );
 
             if (walletType == ModelWalletTypes.plug) {
-                this.#_plugWalletConnected = true;
+                this.#_model.PlugWalletConnected = true;
             }
         } catch (error) {
             console.log(error);
         } finally {
-            this.#_inside_login = false;
+            this.#_model.Inside_login = false;
 
             if (sendEventUserIdentyChanged == true) {
                 this.#UserIdentityChanged();
@@ -236,17 +226,17 @@ export class IdentityProvider {
     }
 
     async Logout(sendEventUserIdentyChanged = true) {
-        if (this.#_inside_logout) {
+        if (this.#_model.Inside_logout) {
             return;
         }
-        this.#_inside_logout = true;
+        this.#_model.Inside_logout = true;
         try {
-            if (this.#_init_done == false) {
+            if (this.#_model.Init_done == false) {
                 if (
-                    this.#_adapter.provider != null &&
-                    this.#_adapter.provider != false
+                    this.#_model.Adapter.provider != null &&
+                    this.#_model.Adapter.provider != false
                 ) {
-                    await this.#_adapter.disconnect();
+                    await this.#_model.Adapter.disconnect();
                 }
                 return;
             }
@@ -255,21 +245,22 @@ export class IdentityProvider {
                 return;
             }
 
-            let connectedWalletInfo: any = this.#_adapter?.connectedWalletInfo;
+            let connectedWalletInfo: any =
+                this.#_model.Adapter?.connectedWalletInfo;
             if (
                 connectedWalletInfo != null &&
                 connectedWalletInfo != undefined
             ) {
                 if (connectedWalletInfo?.id == 'plug') {
-                    this.#_plugWalletConnected = false;
+                    this.#_model.PlugWalletConnected = false;
                 }
             }
 
-            await this.#_adapter.disconnect();
+            await this.#_model.Adapter.disconnect();
         } catch (error) {
             console.log(error);
         } finally {
-            this.#_inside_logout = false;
+            this.#_model.Inside_logout = false;
             if (sendEventUserIdentyChanged == true) {
                 await this.#UserIdentityChanged();
             }
