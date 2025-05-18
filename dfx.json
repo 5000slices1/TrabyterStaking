@@ -1,15 +1,24 @@
 {
   "canisters": {
+      "StakingCanister": {
+      "declarations": {
+        "node_compatibility": true
+      },
+      "main": "src/Motoko/Canisters/StakingCanister/main.mo",
+      "type": "motoko"
+    },
+
     "TrabyterStaking_backend": {
       "declarations": {
         "node_compatibility": true
       },
-      "main": "src/TrabyterStaking_backend/main.mo",
+      "main": "src/Motoko/Canisters/TrabyterStaking_backend/main.mo",
       "type": "motoko"
     },
     "TrabyterStaking_frontend": {
       "dependencies": [
-        "TrabyterStaking_backend"
+        "TrabyterStaking_backend",
+        "StakingCanister"
       ],
       "source": [
         "src/TrabyterStaking_frontend/dist"
