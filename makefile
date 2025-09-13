@@ -48,4 +48,5 @@ endif
 	sudo npm i browserify-zlib @dfinity/auth-client
 	sudo npm install --save isomorphic-fetch
 	sudo npm install svelte-preprocess
+	sudo npm install @sveltejs/kit
 	@sudo chmod -R go+rw src/TrabyterStaking_frontend/.svelte-kit

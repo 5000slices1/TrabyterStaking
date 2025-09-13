@@ -15,11 +15,7 @@ export const PubSub = (() => {
         return true;
     }
 
-    function subscribe(
-        subscriber_identifier: string | number,
-        event: string,
-        func: Function,
-    ) {
+    function subscribe(subscriber_identifier: string | number, event: string, func: Function) {
         if (!events[event]) {
             events[event] = [];
         }
@@ -35,8 +31,7 @@ export const PubSub = (() => {
     function unsubscribe(subscriber_identifier: string | number) {
         Object.keys(events).some((event) =>
             events[event].some((subscriber, index) => {
-                const areEqual =
-                    subscriber?.token === subscriber_identifier.toString();
+                const areEqual = subscriber?.token === subscriber_identifier.toString();
                 if (areEqual) {
                     events[event].splice(index, 1);
                 }
