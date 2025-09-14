@@ -1,3 +1,4 @@
+import {MessageProvider} from '$lib/javascript/Logic/messages/messageProvider';
 import {NftProvider} from '$lib/javascript/Logic/Nft/NftProvider';
 
 import {IdentityProvider} from './identity/IdentityProvider';
@@ -6,10 +7,12 @@ class InternalMainClass {
     #init_done: boolean = false;
     IdentityProvider: IdentityProvider;
     NftProvider: NftProvider;
+    MessageProvider: MessageProvider;
 
     constructor() {
         this.IdentityProvider = new IdentityProvider();
         this.NftProvider = NftProvider.getInstance();
+        this.MessageProvider = new MessageProvider();
     }
 
     async InitAsync() {
@@ -18,7 +21,9 @@ class InternalMainClass {
         }
         await this.IdentityProvider.Init();
         await this.NftProvider.InitAsync();
+        await this.MessageProvider.Init();
         this.#init_done = true;
+
         console.log('GlobalTypes.InitAsync done');
     }
 

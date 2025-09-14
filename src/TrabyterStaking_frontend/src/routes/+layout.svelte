@@ -7,6 +7,7 @@
     import {version} from '$app/environment';
     import './../app.css';
     import {goto} from '$app/navigation';
+    import {MessageFullScreenRequestMessage} from '$lib/javascript/Abstractions/messages/messageData/FullScreen/messageFullScreenRequestMessage';
     //import {page} from '$app/state';
     //import {Artemis} from './../artemis-web3-adapter/src/index.js';
 
@@ -35,49 +36,24 @@
         console.log('start done');
     });
 
-    async function WalletLoginPlug() {
-        if (browser) {
-            await MainClass.IdentityProvider.Login(ModelWalletTypes.plug);
-        }
-    }
-
-    async function WalletLogout() {
-        if (browser) {
-            await MainClass.IdentityProvider.Logout();
-        }
-    }
-
-    async function OnButtonWalletDropDownClicked() {
-        console.log('OnButtonWalletDropDownClicked');
-        if (browser) {
-            const element = document.getElementById('dropDownWalletMenu');
-            if (element) {
-                element.classList.add('show');
-            }
-        }
-    }
-    // Close the dropdown menu if the user clicks outside of it
     if (browser) {
-        window.onclick = function (event) {
-            var targetElement = event?.target as HTMLElement;
-            if (targetElement == null || !targetElement.className.toString().match('walletLoginButton')) {
-                const element = document.getElementById('dropDownWalletMenu');
-                if (element != null && element.classList.contains('show')) {
-                    element.classList.remove('show');
-                }
-            }
-        };
-    }
-
-    function navigateToHomePage() {
-        console.log('navigateToHomePage');
-        goto('/?canisterId=' + canisterId);
+        let fsStored = sessionStorage.getItem('isFullScreen');
+        console.log('fsStored', fsStored);
     }
 
     // In full-screen the header of parent website (trabyter.com) is hidden and the content uses the full screen
     function toggleFullScreenMode(event: Event) {
         const checked = (event.target as HTMLInputElement).checked;
+
+        sessionStorage.setItem('isFullScreen', checked.toString());
+
+        MainClass.MessageProvider.SendFullScreenRequest(checked);
         console.log('Toggle state:', checked);
+    }
+
+    function navigateToHomePage() {
+        console.log('navigateToHomePage');
+        goto('/?canisterId=' + canisterId);
     }
 
     function navigateToDepositPage() {
@@ -183,68 +159,6 @@
                                                 <td
                                                     style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
                                                 ></td>
-                                                <td>
-                                                    <!-- #region Wallet connection dropdown - hidden for now, because no usage at the moment -->
-                                                    <div class="dropdown">
-                                                        <button
-                                                            id="buttonWalletDropDown"
-                                                            type="submit"
-                                                            class="walletLoginButton"
-                                                            onclick={OnButtonWalletDropDownClicked}
-                                                            >Wallet Connection</button
-                                                        >
-
-                                                        <div
-                                                            id="dropDownWalletMenu"
-                                                            class="wallet-control-not-logged-in"
-                                                        >
-                                                            <table cellspacing="0" cellpadding="0">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <button
-                                                                                id="loginPlug"
-                                                                                type="submit"
-                                                                                class="button-dropdownmenu"
-                                                                                onclick={WalletLoginPlug}
-                                                                            >
-                                                                                <img
-                                                                                    src="../assets/icons/plug.jpg"
-                                                                                    alt="plug"
-                                                                                    width="22em"
-                                                                                    height="22em"
-                                                                                    style="float: left;margin-left: 0.4em;"
-                                                                                />
-                                                                                <div
-                                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
-                                                                                >
-                                                                                    Connect with Plug
-                                                                                </div>
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <button
-                                                                                id="logout"
-                                                                                type="submit"
-                                                                                class="button-dropdownmenu"
-                                                                                onclick={WalletLogout}
-                                                                            >
-                                                                                <div
-                                                                                    style="margin: auto;text-align: right;margin-right: 10px;  margin-top: 0px;"
-                                                                                >
-                                                                                    Logout
-                                                                                </div>
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                    <!-- #endregion Wallet connection dropdown -->
-                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>

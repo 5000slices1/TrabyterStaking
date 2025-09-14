@@ -1,4 +1,4 @@
 export enum MessageType {
     Unknown = 'Unknown',
-    SwitchFullScreenMode = 'SwitchFullScreenMode',
+    FullScreenRequest = 'FullScreenRequest',
 }

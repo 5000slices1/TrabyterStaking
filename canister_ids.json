@@ -1,8 +1,13 @@
 {
   "TrabyterStaking_frontend": {
-    "ic": "2mjwp-daaaa-aaaak-qimya-cai"
+    "ic": "2mjwp-daaaa-aaaak-qimya-cai",
+    "local": "uzt4z-lp777-77774-qaabq-cai"
   },
   "TrabyterStaking_backend": {
-    "ic": "zk4ae-aqaaa-aaaak-qiula-cai"
+    "ic": "zk4ae-aqaaa-aaaak-qiula-cai",
+    "local": "umunu-kh777-77774-qaaca-cai"
+  },
+  "StakingCanister": {
+    "local": "umunu-kh777-77774-qaaca-cai"
   }
 }
