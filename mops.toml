@@ -1,0 +1,3 @@
+[dependencies]
+base = "0.14.9"
+memory-hashlist = "2.0.0"

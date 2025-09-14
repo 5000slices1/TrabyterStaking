@@ -27,6 +27,8 @@ endif
 	sudo apt install nodejs -y
 	sudo apt install npm -y
 	sudo npm install ic-mops
+#	mops init
+	mops add memory-hashlist
 #	sudo npm install @babel/core
 #	sudo npm install @babel/node
 #	sudo npm install @babel/preset-env

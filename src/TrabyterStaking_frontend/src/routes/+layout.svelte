@@ -1,11 +1,11 @@
 <script lang="ts">
     //import adapter from '@sveltejs/adapter-static';
-    import {browser} from '$app/environment';
+    import {browser, version} from '$app/environment';
     import {onMount} from 'svelte';
     import {MainClass} from '../lib/javascript/Logic/MainClass';
     import {ModelWalletTypes} from '$lib/javascript/Abstractions/Identity/ModelWalletTypes';
-    import {version} from '$app/environment';
     import './../app.css';
+    import {MainNavigationUrls} from '$lib/javascript/Abstractions/sessionStorage/mainNavigationUrls';
     import {goto} from '$app/navigation';
     import {MessageFullScreenRequestMessage} from '$lib/javascript/Abstractions/messages/messageData/FullScreen/messageFullScreenRequestMessage';
     //import {page} from '$app/state';
@@ -27,47 +27,100 @@
     onMount(async () => {
         console.log('the component has mounted');
         console.log('start init');
-        if (browser) {
-            if (MainClass.IsInitDone()) {
-                return;
-            }
-            await MainClass.InitAsync();
-        }
+        await OnMountInit();
         console.log('start done');
     });
 
     if (browser) {
-        let fsStored = sessionStorage.getItem('isFullScreen');
-        console.log('fsStored', fsStored);
+        //let fsStored = sessionStorage.getItem('isFullScreen');
+        //console.log('fsStored', fsStored);
+    }
+
+    async function OnMountInit() {
+        if (!browser) {
+            return;
+        }
+
+        if ($MainClass.IsInitDone()) {
+            return;
+        }
+        await $MainClass.InitAsync();
+        //let fullScreen:boolean = $MainClass.SessionStorage.IsFullScreen;
+        if ($MainClass.SessionStorage.IsFullScreen) {
+            $MainClass.MessageProvider.SendFullScreenRequest(true);
+        }
+        // let mainNavigationUrls: MainNavigationUrls = $MainClass.SessionStorage.currentUrl;
+        // console.log('MainNavigationUrls', MainNavigationUrls);
+        // switch (mainNavigationUrls) {
+        //     case MainNavigationUrls.Home:
+        //         navigateToHomePage();
+        //         break;
+        //     case MainNavigationUrls.Deposit:
+        //         navigateToDepositPage();
+        //         break;
+        //     case MainNavigationUrls.Information:
+        //         navigateToInformationPage();
+        //         break;
+        //     case MainNavigationUrls.StakingPool:
+        //         navigateToStakingPoolPage();
+        //         break;
+        //     default:
+        //         navigateToHomePage();
+        //         break;
+        // }
     }
 
     // In full-screen the header of parent website (trabyter.com) is hidden and the content uses the full screen
     function toggleFullScreenMode(event: Event) {
         const checked = (event.target as HTMLInputElement).checked;
-
-        sessionStorage.setItem('isFullScreen', checked.toString());
-
-        MainClass.MessageProvider.SendFullScreenRequest(checked);
+        $MainClass.SessionStorage.IsFullScreen = checked;
+        $MainClass.MessageProvider.SendFullScreenRequest(checked);
         console.log('Toggle state:', checked);
     }
 
     function navigateToHomePage() {
         console.log('navigateToHomePage');
-        goto('/?canisterId=' + canisterId);
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Home;
+        MainNavButtonStylingUpdate('navButtonHome');
+        //goto('/?canisterId=' + canisterId);
+        goto('/');
     }
 
     function navigateToDepositPage() {
         console.log('navigateToDepositPage');
-        goto('/pages/deposit?canisterId=' + canisterId);
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Deposit;
+        MainNavButtonStylingUpdate('navButtonDeposit');
+        goto('/pages/deposit');
+        //goto('/pages/deposit?canisterId=' + canisterId);
     }
 
     function navigateToInformationPage() {
         console.log('navigateToInformationPage');
-        goto('/pages/information?canisterId=' + canisterId);
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Information;
+        MainNavButtonStylingUpdate('navButtonInformation');
+        //goto('/pages/information?canisterId=' + canisterId);
+        goto('/pages/information');
     }
     function navigateToStakingPoolPage() {
         console.log('navigateToStakingPoolPage');
-        goto('/pages/stakingpool?canisterId=' + canisterId);
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.StakingPool;
+        MainNavButtonStylingUpdate('navButtonStakingPool');
+        //goto('/pages/stakingpool?canisterId=' + canisterId);
+        goto('/pages/stakingpool');
+    }
+
+    // Main navigation button clicked
+    function MainNavButtonStylingUpdate(id: string) {
+        // set other buttons to not selected
+        var buttons = document.getElementsByClassName('main-header-button');
+        for (var i = 0; i < buttons.length; i++) {
+            var currentId = buttons[i].getAttribute('id');
+            if (currentId != id) {
+                buttons[i].classList.remove('main-header-button-selected');
+            } else {
+                buttons[i].classList.add('main-header-button-selected');
+            }
+        }
     }
 </script>
 
@@ -108,6 +161,7 @@
                                                         <input
                                                             type="checkbox"
                                                             id="toggleSwitch"
+                                                            checked={$MainClass.SessionStorage.IsFullScreen}
                                                             onchange={toggleFullScreenMode}
                                                         />
                                                         <span class="slider"></span>

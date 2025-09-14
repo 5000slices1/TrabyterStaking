@@ -1,11 +1,12 @@
-import type {b} from 'vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
+//import type {b} from 'vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf';
+import {MainNavigationUrls} from './mainNavigationUrls';
 
-export class sessionStorage {
-    IsFullScreen: boolean = false;
-    currentUrl: string = '';
+export class SessionStorage {
+    IsFullScreen: boolean;
+    currentUrl: MainNavigationUrls;
 
     constructor() {
-        this.currentUrl = '';
+        this.currentUrl = MainNavigationUrls.Unknown;
         this.IsFullScreen = false;
 
         // if (typeof window !== 'undefined') {
@@ -16,21 +17,22 @@ export class sessionStorage {
 
     Load(): void {
         if (typeof window !== 'undefined') {
-            let fsStoredString = window.sessionStorage.getItem('trabyterStakingSessionsStorage');
+            let fsStoredString = window.sessionStorage.getItem('TrabyterStakingSessionsStorage');
             if (fsStoredString == null) {
                 return;
             }
 
-            let data: sessionStorage = JSON.parse(fsStoredString as string);
+            let data: SessionStorage = JSON.parse(fsStoredString as string);
             this.IsFullScreen = data.IsFullScreen == null ? false : (data.IsFullScreen as boolean);
-            this.currentUrl = data.currentUrl == null ? '' : (data.currentUrl as string);
+            this.currentUrl =
+                data.currentUrl == null ? MainNavigationUrls.Unknown : (data.currentUrl as MainNavigationUrls);
         }
     }
 
     Save(): void {
         if (typeof window !== 'undefined') {
             let jsonString = JSON.stringify(this);
-            window.sessionStorage.setItem('trabyterStakingSessionsStorage', jsonString);
+            window.sessionStorage.setItem('TrabyterStakingSessionsStorage', jsonString);
         }
     }
 }
