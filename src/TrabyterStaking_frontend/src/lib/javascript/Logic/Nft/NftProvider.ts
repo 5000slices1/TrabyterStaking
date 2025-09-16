@@ -5,6 +5,7 @@ export class NftProvider {
     private static instance: NftProvider;
     private ownedNftDataProvider: OwnedNftDataProvider;
     private nftMetadataProvider: NftMetadataProvider;
+    public isInitialized: boolean = false;
 
     private constructor() {
         this.ownedNftDataProvider = new OwnedNftDataProvider([]);
@@ -20,6 +21,7 @@ export class NftProvider {
 
     public async InitAsync(): Promise<void> {
         await this.nftMetadataProvider.updateAllAsync();
+        this.isInitialized = true;
     }
 
     public getOwnedNftDataProvider(): OwnedNftDataProvider {

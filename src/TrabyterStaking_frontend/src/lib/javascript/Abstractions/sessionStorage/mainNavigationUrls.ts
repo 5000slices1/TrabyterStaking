@@ -3,5 +3,6 @@ export enum MainNavigationUrls {
     Deposit = 'Deposit',
     Information = 'Information',
     StakingPool = 'StakingPool',
+    StakingCreation = 'StakingCreation',
     Unknown = 'Unknown',
 }

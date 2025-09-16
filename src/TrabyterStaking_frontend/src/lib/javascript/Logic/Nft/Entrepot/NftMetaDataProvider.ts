@@ -70,6 +70,9 @@ export class NftMetadataProvider {
         return this.nftsMetadata.nfts;
     }
 
+    public IsEmpty(): boolean {
+        return this.nftsMetadata.nfts.length === 0;
+    }
     /**
      * Fetches NFT metadata from the API and updates the internal state.
      * This method is responsible for making the API call to fetch the metadata,
@@ -81,9 +84,7 @@ export class NftMetadataProvider {
 
         // Fetch the NFT metadata from the API
         try {
-            const response = await fetch(
-                'https://us-central1-entrepot-api.cloudfunctions.net/api/collections',
-            );
+            const response = await fetch('https://us-central1-entrepot-api.cloudfunctions.net/api/collections');
             const data = await response.json();
             const nfts = data.map(
                 (item: any) =>

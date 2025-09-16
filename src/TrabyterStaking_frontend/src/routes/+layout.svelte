@@ -87,7 +87,6 @@
     }
 
     function navigateToDepositPage() {
-        console.log('navigateToDepositPage');
         $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Deposit;
         MainNavButtonStylingUpdate('navButtonDeposit');
         goto('/pages/deposit');
@@ -95,18 +94,22 @@
     }
 
     function navigateToInformationPage() {
-        console.log('navigateToInformationPage');
         $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Information;
         MainNavButtonStylingUpdate('navButtonInformation');
         //goto('/pages/information?canisterId=' + canisterId);
         goto('/pages/information');
     }
     function navigateToStakingPoolPage() {
-        console.log('navigateToStakingPoolPage');
         $MainClass.SessionStorage.currentUrl = MainNavigationUrls.StakingPool;
         MainNavButtonStylingUpdate('navButtonStakingPool');
         //goto('/pages/stakingpool?canisterId=' + canisterId);
         goto('/pages/stakingpool');
+    }
+    function navigateToStakeItemCreationPage() {
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.StakingCreation;
+        MainNavButtonStylingUpdate('navButtonCreateStakingPoolItem');
+        //goto('/pages/stakingCreation?canisterId=' + canisterId);
+        goto('/pages/stakingCreation');
     }
 
     // Main navigation button clicked
@@ -188,11 +191,22 @@
                                                         onclick={() => navigateToStakingPoolPage()}>Staking-Pool</button
                                                     >
                                                 </td>
-
-                                                <!-- svelte-ignore element_invalid_self_closing_tag -->
                                                 <td
                                                     style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
                                                 ></td>
+
+                                                <td>
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonCreateStakingPoolItem"
+                                                        onclick={() => navigateToStakeItemCreationPage()}
+                                                        >Create Nft Staking</button
+                                                    >
+                                                </td>
+                                                <td
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
+                                                ></td>
+
                                                 <td>
                                                     <button
                                                         class="main-header-button"
