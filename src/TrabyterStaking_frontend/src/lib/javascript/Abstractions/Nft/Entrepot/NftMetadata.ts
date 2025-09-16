@@ -1,6 +1,32 @@
 /**
  * Represents metadata for an NFT (Non-Fungible Token).
  */
+
+class NftsMetadataHelpers {
+    public GetComparableName(name: string): string {
+        return this.GetOnlyComparableString(name);
+    }
+
+    private toAscii(str: string): string {
+        // Replace Unicode Mathematical Bold Capital letters (𝐀-𝐙) with ASCII A-Z
+        return str.replace(/[\u{1D400}-\u{1D419}]/gu, (ch) => String.fromCharCode(ch.codePointAt(0)! - 0x1d400 + 0x41));
+    }
+
+    private GetOnlyComparableString(str: string | undefined): string {
+        if (str === undefined) return '';
+        str = this.toAscii(str).toLowerCase();
+        str = str.replace(' ', '');
+        str = str.replace(/[^a-z0-9]/g, '');
+        return str;
+    }
+
+    // Exclude these methods from serialization
+    toJSON() {
+        const {GetComparableName, toAscii, GetOnlyComparableString, ...serialized} = this;
+        return serialized;
+    }
+}
+
 export class NftMetadata {
     /**
      * Unique identifier for the NFT.
@@ -20,7 +46,7 @@ export class NftMetadata {
     /**
      * A comparable version of the name, typically used for sorting or searching.
      */
-    nameComparable:string
+    nameComparable: string;
 
     /**
      * A brief summary of the NFT.
@@ -228,102 +254,88 @@ export class NftMetadata {
      * @param owner - Owner or holder of the NFT.
      * @param royalty - Royalty percentage for the NFT.
      */
-    constructor(
-        id: string,
-        priority: number,
-        name: string,
-        brief: string,
-        description: string,
-        blurb: string,
-        keywords: string[],
-        web: string,
-        telegram: string,
-        discord: string,
-        twitter: string,
-        medium: string,
-        dscvr: string,
-        distrikt: string,
-        banner: string,
-        avatar: string,
-        collection: string,
-        route: string,
-        commission: number,
-        legacy: boolean,
-        unit: string,
-        nftv: string,
-        mature: boolean,
-        market: string,
-        dev: boolean,
-        external: string,
-        filter: string,
-        sale: string,
-        earn: string,
-        saletype: string,
-        standard: string,
-        detailpage: string,
-        nftlicense: string,
-        kyc: boolean,
-        owner: string,
-        royalty: number,
-    ) {
+    constructor(obj: {
+        id: string;
+        priority: number;
+        name: string;
+        nameComparable: string;
+        brief: string;
+        description: string;
+        blurb: string;
+        keywords: string[];
+        web: string;
+        telegram: string;
+        discord: string;
+        twitter: string;
+        medium: string;
+        dscvr: string;
+        distrikt: string;
+        banner: string;
+        avatar: string;
+        collection: string;
+        route: string;
+        commission: number;
+        legacy: boolean;
+        unit: string;
+        nftv: string;
+        mature: boolean;
+        market: string;
+        dev: boolean;
+        external: string;
+        filter: string;
+        sale: string;
+        earn: string;
+        saletype: string;
+        standard: string;
+        detailpage: string;
+        nftlicense: string;
+        kyc: boolean;
+        owner: string;
+        royalty: number;
+    }) {
+        // We need to assign default values to avoid undefined issues
+        this.id = '';
+        this.priority = 0;
+        this.name = '';
         this.nameComparable = '';
-        this.id = id;
-        this.priority = priority;
-        this.name = name;
-        this.brief = brief;
-        this.description = description;
-        this.blurb = blurb;
-        this.keywords = keywords;
-        this.web = web;
-        this.telegram = telegram;
-        this.discord = discord;
-        this.twitter = twitter;
-        this.medium = medium;
-        this.dscvr = dscvr;
-        this.distrikt = distrikt;
-        this.banner = banner;
-        this.avatar = avatar;
-        this.collection = collection;
-        this.route = route;
-        this.commission = commission;
-        this.legacy = legacy;
-        this.unit = unit;
-        this.nftv = nftv;
-        this.mature = mature;
-        this.market = market;
-        this.dev = dev;
-        this.external = external;
-        this.filter = filter;
-        this.sale = sale;
-        this.earn = earn;
-        this.saletype = saletype;
-        this.standard = standard;
-        this.detailpage = detailpage;
-        this.nftlicense = nftlicense;
-        this.kyc = kyc;
-        this.owner = owner;
-        this.royalty = royalty;
-    }
+        this.brief = '';
+        this.description = '';
+        this.blurb = '';
+        this.keywords = [];
+        this.web = '';
+        this.telegram = '';
+        this.discord = '';
+        this.twitter = '';
+        this.medium = '';
+        this.dscvr = '';
+        this.distrikt = '';
+        this.banner = '';
+        this.avatar = '';
+        this.collection = '';
+        this.route = '';
+        this.commission = 0;
+        this.legacy = false;
+        this.unit = '';
+        this.nftv = '';
+        this.mature = false;
+        this.market = '';
+        this.dev = false;
+        this.external = '';
+        this.filter = '';
+        this.sale = '';
+        this.earn = '';
+        this.saletype = '';
+        this.standard = '';
+        this.detailpage = '';
+        this.nftlicense = '';
+        this.kyc = false;
+        this.owner = '';
+        this.royalty = 0;
 
-    public GetComparableName(): string {
-        if (this.nameComparable && this.nameComparable.length > 0) {
-            return this.nameComparable;
-        }
-        return this.GetOnlyComparableString(this.name);
-    }
+        // Assign properties from obj
+        Object.assign(this, obj);
 
-    private toAscii(str: string): string {
-        // Replace Unicode Mathematical Bold Capital letters (𝐀-𝐙) with ASCII A-Z
-        return str.replace(/[\u{1D400}-\u{1D419}]/gu, (ch) =>
-            String.fromCharCode(ch.codePointAt(0)! - 0x1d400 + 0x41)
-        );
-    }
-
-    private GetOnlyComparableString(str: string | undefined): string {
-        if (str === undefined) return '';
-        str = this.toAscii(str).toLowerCase();
-        str = str.replace(' ', '');
-        str = str.replace(/[^a-z0-9]/g, '');
-        return str;
+        let helper = new NftsMetadataHelpers();
+        this.nameComparable = helper.GetComparableName(obj.name);
     }
 }
