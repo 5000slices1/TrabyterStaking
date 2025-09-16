@@ -127,15 +127,15 @@
     }
 </script>
 
-<div class="main-html-content">
+<div class="main-html-content" style="background-color: white;">
     <main class="main-body-content">
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
         />
         <div
-            style="min-height: calc(100vh - 2.1em);
-                   height:  calc(100vh - 2.1em);
+            style="min-height: calc(100vh - 2.1rem);
+                   height:  calc(100vh - 2.1rem);
     vertical-align: top;
     "
         >
@@ -147,7 +147,11 @@
                     <tr>
                         <td>
                             <!-- Header section -->
-                            <header class="main-header">
+                            <header
+                                class="main-header"
+                                style="margin-left: 0.4rem;
+                             margin-right: 0.5rem;"
+                            >
                                 <div class="main-header-div" id="divMainMenu" style="vertical-align: top;">
                                     <table
                                         cellspacing="0"
@@ -239,7 +243,11 @@
 
                     <tr style="height: 100%;vertical-align: top;">
                         <td>
-                            <div id="divMainContent" style="width: 100%; height: 100%; margin-top: 0.4em;">
+                            <div
+                                id="divMainContent"
+                                style="width: 100%; height: 100%;
+                             margin-top: 0.0em;"
+                            >
                                 {@render data.children()}
                             </div>
                         </td>

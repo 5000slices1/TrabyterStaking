@@ -13,7 +13,8 @@
 
 .main-body-content {
     height: 100%;
-    margin: 0em 0.4em 0em 0.4em;
+    /* margin: 0em 0.4em 0em 0.4em; */
+    margin: 0em 0em 0em 0em;
     /* margin: 1.2em 3.2em 0.4em 3.2em; */
     /* left: 0.5rm; */
 }
@@ -30,8 +31,13 @@
     background-color: #36368f;
 
     width: 100%;
-    /* border-top-left-radius: 2.8rem;
-    border-top-right-radius: 2.8rem; */
+    border-top-left-radius: 0.8rem;
+    border-top-right-radius: 0.8rem;
+    border-bottom-left-radius: 0.8rem;
+    border-bottom-right-radius: 0.8rem;
+    border-color: #36368f;
+    border-width: 0.1em;
+    border-style: solid;
     box-shadow: 0 0.2em 0.3em rgba(255, 254, 254, 0.25), inset 0.4em 0.3em 0.6em rgba(255, 251, 251, 0.25);
 }
 

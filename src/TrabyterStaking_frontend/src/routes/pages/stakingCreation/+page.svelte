@@ -76,10 +76,14 @@
     });
 </script>
 
-<div class="content-control-div" style="width: 100%; height: 100%; margin-top: 0.4rem;color:white">
+<div
+    class="content-control-div"
+    style="width: 100%; height: 100%;
+margin-top: 0.2rem;color:white; background: white;"
+>
     <div class="inner-content-control-spacing" style="width: auto;">
         <!-- Filter Controls -->
-        <div style="margin-bottom: 1rem;">
+        <div style="margin-bottom: 1rem;margin-left:1.6rem;">
             <button onclick={() => UpdateFilteredItems('All')} class:selected={filter === 'All'}>All</button>
             <button onclick={() => UpdateFilteredItems('0-9')} class:selected={filter === '0-9'}>0-9</button>
             {#each Array.from({length: 26}, (_, i) => String.fromCharCode(65 + i)) as letter}
@@ -87,11 +91,11 @@
             {/each}
         </div>
 
-        <div style="margin-left:2rem;margin-top: 1rem;">
+        <div style="margin-left:2rem;">
             {#if filteredItems.length > 0}
-                <div class="data-grid">
+                <div class="items-grid">
                     {#each filteredItems as item}
-                        <div class="data-item">
+                        <div class="items-item">
                             <NftOverviewControl {...item} />
                         </div>
                     {/each}
@@ -104,6 +108,26 @@
 </div>
 
 <style>
+    .items-grid {
+        display: grid;
+        grid-template-columns: 15rem repeat(auto-fit, minmax(15rem, 15rem));
+        column-gap: min(4rem, 100%);
+        row-gap: 2rem;
+        transition: opacity 1.5s ease-in-out;
+    }
+
+    .items-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: opacity 1.5s ease-in-out;
+    }
+
+    .items-item:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease-in-out;
+    }
+
     button.selected {
         font-weight: bold;
         background: #444;
