@@ -8,18 +8,14 @@
     import {onMount} from 'svelte';
     import {browser} from '$app/environment';
     import {get} from 'http';
+    import CreateStakingOverviewControl from '$lib/components/uiControls/Nft/CreateStakingOverviewControl.svelte';
 
     let data = $props();
-
     let nftProvider: NftProvider = $MainClass.NftProvider;
-    //var allNfts = nftProvider.getAllNfts().filter((nft) => nft.standard === 'ext' && nft.dev === 'false');
-    //await nftProvider.updateAllAsync();
-    //var allNfts = nftProvider.getAllNfts();
-    //console.log('2');
-
     let items: NftMetadata[] = $state([] as NftMetadata[]);
     let filteredItems: NftMetadata[] = $state([] as NftMetadata[]);
     let filter: string = $state('All');
+    let createStakingForItem: NftMetadata | null = $state(null);
 
     // Helper to check if a string starts with a digit
     function startsWithDigit(str: string) {
@@ -39,41 +35,28 @@
 
     onMount(async () => {
         if (browser) {
-            console.log('in onmount');
             let mdp = NftMetadataProvider.getInstance();
             if (mdp.IsEmpty()) {
-                console.log('updating nft metadata provider');
                 await mdp.updateAllAsync();
             }
 
-            console.log('after update');
+            let allItems: NftMetadata[] = mdp.getAllNfts();
 
-            let allItems: NftMetadata[] = mdp
-                .getAllNfts()
-                .filter((nft) => nft.standard === 'ext' && nft.dev === false)
+            allItems = allItems
+                .filter(
+                    (nft) =>
+                        (nft.standard === 'ext' || nft.standard === 'legacy1.5' || nft.standard === 'legacy') &&
+                        nft.dev === false,
+                )
                 .sort((a, b) => a.nameComparable.localeCompare(b.nameComparable));
             items = [...(allItems as NftMetadata[])];
             UpdateFilteredItems('All');
-            // for (let i = 0; i < items.length; i++) {
-            //     let cs = items[i].nameComparable;
-            //     console.log(cs);
-            // }
-
-            // if (nftProvider.isInitialized === false) {
-            //     await nftProvider.InitAsync();
-            // }
-            // let nftMetaDataProvider: NftMetadataProvider = nftProvider.getNftMetadataProvider();
-            // let allItems: NftMetadata[] = await nftMetaDataProvider
-            //     .getAllNfts()
-            //     .then((nfts) => nfts.filter((nft) => nft.standard === 'ext' && nft.dev === 'false'));
-            // items = allItems;
-
-            console.log('NftMetadata', items);
-            console.log('items count:', items.length);
         }
-        //items = await nftProvider.getAllNftMetadata();
-        //console.log('NftMetadata', items);
     });
+
+    function ShowCreateStakingOverlayWindow(item: NftMetadata): void {
+        createStakingForItem = item;
+    }
 </script>
 
 <div
@@ -96,7 +79,10 @@ margin-top: 0.2rem;color:white; background: white;"
                 <div class="items-grid">
                     {#each filteredItems as item}
                         <div class="items-item">
-                            <NftOverviewControl {...item} />
+                            <NftOverviewControl
+                                {...item}
+                                on:createStakingButtonClick={() => ShowCreateStakingOverlayWindow(item)}
+                            />
                         </div>
                     {/each}
                 </div>
@@ -104,6 +90,24 @@ margin-top: 0.2rem;color:white; background: white;"
                 <div>No items found for this filter.</div>
             {/if}
         </div>
+
+        {#if createStakingForItem}
+            <div
+                style="position: fixed;
+                     background: transparent; top: 50%; left: 50%;
+                     transform: translate(-50%, -50%);
+                     z-index: 1000;
+                     "
+            >
+                <p style="color: white; text-align: center;">
+                    <CreateStakingOverviewControl
+                        data={createStakingForItem}
+                        userIcpBalance={12.3456}
+                        stakingDays={90}
+                    />
+                </p>
+            </div>
+        {/if}
     </div>
 </div>
 

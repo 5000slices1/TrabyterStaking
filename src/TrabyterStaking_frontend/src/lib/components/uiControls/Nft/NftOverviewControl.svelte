@@ -1,6 +1,8 @@
 <script lang="ts">
     import {NftMetadata} from '$lib/javascript/Abstractions/Nft/Entrepot/NftMetadata';
+    import {createEventDispatcher} from 'svelte';
     let data: NftMetadata = $props();
+    const dispatch = createEventDispatcher();
 </script>
 
 <div class="NftMetadataItem" style="width: 16rem; height: 20rem;">
@@ -22,10 +24,11 @@
                     <button
                         class="create-nft-button"
                         style="width: 100%; height:2.3rem;
-                            width:12rem;margin-left: 2rem; margin-right: 2rem;
-                            vertical-align: bottom;
-                            horizontal-align: center;
-                            cursor: pointer;"
+                                width:12rem;margin-left: 2rem; margin-right: 2rem;
+                                vertical-align: bottom;
+                                horizontal-align: center;
+                                cursor: pointer;"
+                        onclick={() => dispatch('createStakingButtonClick')}
                     >
                         Create NFT Staking.
                     </button>
