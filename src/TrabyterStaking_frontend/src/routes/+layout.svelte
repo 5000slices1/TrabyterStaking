@@ -7,7 +7,7 @@
     import './../app.css';
     import {MainNavigationUrls} from '$lib/javascript/Abstractions/sessionStorage/mainNavigationUrls';
     import {goto} from '$app/navigation';
-    import {MessageFullScreenRequestMessage} from '$lib/javascript/Abstractions/messages/messageData/FullScreen/messageFullScreenRequestMessage';
+
     //import {page} from '$app/state';
     //import {Artemis} from './../artemis-web3-adapter/src/index.js';
 

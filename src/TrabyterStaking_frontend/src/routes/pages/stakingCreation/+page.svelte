@@ -62,7 +62,9 @@
 <div
     class="content-control-div"
     style="width: 100%; height: 100%;
-margin-top: 0.2rem;color:white; background: white;"
+margin-top: 0.2rem;color:white; background: white;
+opacity: {createStakingForItem ? 0.7 : 1.0};
+"
 >
     <div class="inner-content-control-spacing" style="width: auto;">
         <!-- Filter Controls -->
@@ -90,26 +92,31 @@ margin-top: 0.2rem;color:white; background: white;"
                 <div>No items found for this filter.</div>
             {/if}
         </div>
+    </div>
+</div>
 
-        {#if createStakingForItem}
-            <div
-                style="position: fixed;
+{#if createStakingForItem}
+    <div
+        style="position: fixed;
                      background: transparent; top: 50%; left: 50%;
                      transform: translate(-50%, -50%);
                      z-index: 1000;
                      "
-            >
-                <p style="color: white; text-align: center;">
-                    <CreateStakingOverviewControl
-                        data={createStakingForItem}
-                        userIcpBalance={12.3456}
-                        stakingDays={90}
-                    />
-                </p>
-            </div>
-        {/if}
+    >
+        <p style="color: white; text-align: center;">
+            <CreateStakingOverviewControl
+                data={createStakingForItem}
+                userIcpBalance={12.3456}
+                stakingDays={90}
+                on:create={(event) => {
+                    console.log('Create staking for days: ' + event.detail.stakingDays);
+                    createStakingForItem = null;
+                }}
+                on:close={() => (createStakingForItem = null)}
+            />
+        </p>
     </div>
-</div>
+{/if}
 
 <style>
     .items-grid {

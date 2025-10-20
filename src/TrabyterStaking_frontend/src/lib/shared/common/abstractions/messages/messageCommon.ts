@@ -1,4 +1,4 @@
-export class BaseMessage<T> {
+export class MessageCommon<T> {
     constructor() {}
 
     public toString(): string {

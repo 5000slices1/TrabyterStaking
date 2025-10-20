@@ -1,7 +1,10 @@
 <script lang="ts">
     import {NftMetadata} from '$lib/javascript/Abstractions/Nft/Entrepot/NftMetadata';
+    import {createEventDispatcher} from 'svelte';
+    import {on} from 'svelte/events';
     const {data, userIcpBalance, stakingDays: initialStakingDays} = $props();
     let stakingDays = $state(initialStakingDays);
+    const dispatch = createEventDispatcher();
 </script>
 
 <div class="nft-staking-overview">
@@ -35,8 +38,8 @@
     </div>
 
     <div class="staking-actions">
-        <button class="create-btn">Create now</button>
-        <button class="cancel-btn">Cancel</button>
+        <button class="create-btn" on:click={() => dispatch('create', {stakingDays})}>Create now</button>
+        <button class="cancel-btn" on:click={() => dispatch('close')}>Cancel</button>
     </div>
 </div>
 
