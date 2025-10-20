@@ -7,4 +7,4 @@
 </script>
 
 <p style="color:white;">This is page Information. Coming Soon.</p>
-<button onclick={async () => await useTestMethod}>Test method</button>
+<button onclick={async () => await useTestMethod()}>Test method</button>

@@ -22,6 +22,10 @@ export class MessageProvider extends CommonMessageProvider {
     public async TestingEncryptedMessage() {
         console.log('MessageProvider.TestingEncryptedMessage');
         let publicKey = CryptoUtils.dicPublicKeys.TrabyterStaking;
+        if (!publicKey) {
+            console.error('TrabyterStaking public key not found');
+            return;
+        }
         var jsonPublicKey: string = await CryptoUtils.publicKeyToJwkString(publicKey);
         console.log('TestingEncryptedMessage - public key as JWK string:', jsonPublicKey);
 

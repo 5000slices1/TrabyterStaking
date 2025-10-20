@@ -8,7 +8,7 @@ export class CryptoUtils {
     private static keyPair?: CryptoKeyPair;
 
     /// Dictionary to hold public keys of other apps and myself
-    public static dicPublicKeys: Record<AppIdentifier, CryptoKey>;
+    public static dicPublicKeys: Partial<Record<AppIdentifier, CryptoKey>> = {};
 
     public async InitAsync(): Promise<void> {
         if (!CryptoUtils.keyPair) {
@@ -107,13 +107,9 @@ export class CryptoUtils {
         ]);
 
         // 2. Encrypt the message with AES-GCM
-        const iv: Uint8Array<ArrayBuffer> = window.crypto.getRandomValues(new Uint8Array(12));
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
         const encoded = new TextEncoder().encode(input); // Uint8Array
-        const encryptedData = await window.crypto.subtle.encrypt(
-            {name: 'AES-GCM', iv},
-            aesKey,
-            encoded.buffer, // Use ArrayBuffer
-        );
+        const encryptedData = await window.crypto.subtle.encrypt({name: 'AES-GCM', iv}, aesKey, encoded);
 
         // 3. Export and encrypt the AES key with RSA-OAEP
         const rawAesKey = await window.crypto.subtle.exportKey('raw', aesKey);
