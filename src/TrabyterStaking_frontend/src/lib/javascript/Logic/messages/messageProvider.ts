@@ -14,9 +14,13 @@ export class MessageProvider extends CommonMessageProvider {
 
     public SendFullScreenRequest(useFullScreen: boolean) {
         const message = new RequestFullScreenMessage(useFullScreen);
-        var messageAsString: string = message.toString();
-        console.log('MessageProvider.SendFullScreenRequest string: ', messageAsString);
-        this.PostMessageToParent(MessageType.FullScreenRequest, message.toString());
+
+        this.PostMessageToParent(
+            AppIdentifier.MainWebsite,
+            AppIdentifier.TrabyterStaking,
+            MessageType.FullScreenRequest,
+            message.toString(),
+        );
     }
 
     public async TestingEncryptedMessage() {
@@ -34,6 +38,8 @@ export class MessageProvider extends CommonMessageProvider {
 
         var messageRawData: MessageRawData =
             await CryptoUtils.EncryptAndReturnAsRawMessageAsync<ResponsePublicKeyMessage>(
+                AppIdentifier.TrabyterStaking,
+                AppIdentifier.TrabyterStaking,
                 publicKey,
                 messageType,
                 message,

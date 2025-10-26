@@ -1,6 +1,6 @@
 import {SessionStorage} from '$lib/javascript/Abstractions/sessionStorage/sessionStorage';
+import {MessageProvider} from '$lib/javascript/Logic/messages/messageProvider';
 import {NftProvider} from '$lib/javascript/Logic/Nft/NftProvider';
-import {MessageProvider} from '$lib/shared/trabyterStaking/logic/messages/messageProvider';
 import {writable} from 'svelte/store';
 
 import {CryptoUtils} from '../../shared/common/crypto/cryptoutils';
