@@ -19,15 +19,28 @@ export class MessageProvider extends CommonMessageProvider implements IMessagePr
         await super.InitAsync();
     }
 
-    public SendFullScreenRequest(useFullScreen: boolean) {
+    public async SendFullScreenRequest(useFullScreen: boolean) {
         const message = new RequestFullScreenMessage(useFullScreen);
+
+        // Ensure we have keys before sending encrypted message
+        if (!this.hasKeysFor(AppIdentifier.MainWebsite)) {
+            console.warn('Keys not available for MainWebsite. Requesting keys...');
+            await this.SendPublicKeyRequest(AppIdentifier.MainWebsite);
+
+            // Wait for key exchange
+            const success = await this.waitForKeyExchange(AppIdentifier.MainWebsite, 5000);
+            if (!success) {
+                console.error('Failed to obtain keys for MainWebsite. Cannot send encrypted message.');
+                return;
+            }
+        }
 
         this.PostMessageToParent(
             AppIdentifier.MainWebsite,
             AppIdentifier.TrabyterStaking,
             MessageType.FullScreenRequest,
             message,
-            true,
+            true, // Always encrypted
         );
     }
 
