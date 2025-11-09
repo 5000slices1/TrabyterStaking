@@ -55,8 +55,13 @@ export class CommonMessageProvider {
         // If this is a child app (embedded in iframe), request parent's public key
         if (isBrowser() && window.parent && window.parent !== window) {
             console.log('Child app detected - requesting parent (MainWebsite) public key');
+
+            // Send our keys first, then request parent's keys
             await this.SendPublicKeyResponse(AppIdentifier.MainWebsite);
             await this.SendPublicKeyRequest(AppIdentifier.MainWebsite);
+
+            // Wait for key exchange to complete before proceeding
+            await this.waitForKeyExchange(AppIdentifier.MainWebsite);
         }
 
         console.log('OK. CommonMessageProvider.InitAsync' + this.MyAppIdentifier);
@@ -231,6 +236,34 @@ export class CommonMessageProvider {
         // This method is intended to be overridden by derived classes
     }
 
+    // Helper method to wait for key exchange completion
+    private async waitForKeyExchange(targetIdentifier: AppIdentifier, timeoutMs: number = 5000): Promise<boolean> {
+        const startTime = Date.now();
+
+        while (Date.now() - startTime < timeoutMs) {
+            const encryptionKey = CryptoUtils.GetPublicKey(targetIdentifier);
+            const signingKey = CryptoUtils.GetSigningPublicKey(targetIdentifier);
+
+            if (encryptionKey && signingKey) {
+                console.log('✅ Key exchange completed for:', targetIdentifier);
+                return true;
+            }
+
+            // Wait 100ms before checking again
+            await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
+        console.warn('⚠️ Key exchange timeout for:', targetIdentifier);
+        return false;
+    }
+
+    // Helper method to check if keys are available before sending encrypted messages
+    public hasKeysFor(targetIdentifier: AppIdentifier): boolean {
+        const encryptionKey = CryptoUtils.GetPublicKey(targetIdentifier);
+        const signingKey = CryptoUtils.GetSigningPublicKey(targetIdentifier);
+        return !!(encryptionKey && signingKey);
+    }
+
     public async PostMessage<T>(
         targetIdentifier: AppIdentifier,
         sourceIdentifier: AppIdentifier,
@@ -239,6 +272,20 @@ export class CommonMessageProvider {
         encrypted: boolean = true,
         messageId: string | null = null,
     ) {
+        // If encryption is requested but keys aren't available, either wait or send unencrypted
+        if (encrypted && !this.hasKeysFor(targetIdentifier)) {
+            console.warn(`No keys available for ${targetIdentifier}. Attempting key exchange...`);
+
+            // Try to request keys and wait briefly
+            await this.SendPublicKeyRequest(targetIdentifier);
+            const success = await this.waitForKeyExchange(targetIdentifier, 2000);
+
+            if (!success) {
+                console.error(`Failed to obtain keys for ${targetIdentifier}. Message not sent.`);
+                return;
+            }
+        }
+
         if (targetIdentifier === AppIdentifier.MainWebsite) {
             await this.PostMessageToParent(
                 targetIdentifier,

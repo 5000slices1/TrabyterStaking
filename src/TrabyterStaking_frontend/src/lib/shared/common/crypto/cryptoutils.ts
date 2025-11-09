@@ -47,6 +47,10 @@ export class CryptoUtils {
         return CryptoUtils.dicSigningPublicKeys[appIdentifier];
     }
 
+    public static GetPublicKey(appIdentifier: AppIdentifier): CryptoKey | undefined {
+        return CryptoUtils.dicPublicKeys[appIdentifier];
+    }
+
     private static async generateKeyPairAsync(): Promise<CryptoKeyPair> {
         // Generate a key pair for encryption
         return await window.crypto.subtle.generateKey(
