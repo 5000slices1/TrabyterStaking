@@ -1,3 +1,4 @@
+import {AllowedOriginUrls} from '$lib/javascript/Abstractions/constants/globalConstants';
 import {ResponsePublicKeyMessage} from '$lib/shared/common/abstractions/messages/fromAny/responsePublicKeyMessage';
 import {RequestFullScreenMessage} from '$lib/shared/common/abstractions/messages/FromEmbeddedApp/requestFullScreenMessage';
 import {MessageRawData} from '$lib/shared/common/abstractions/messages/messageRawData';
@@ -7,9 +8,15 @@ import {AppIdentifier} from '$lib/shared/common/abstractions/types/commonTypes';
 import {CryptoUtils} from '$lib/shared/common/crypto/cryptoutils';
 import {CommonMessageProvider} from '$lib/shared/common/logic/commonMessageProvider';
 
-export class MessageProvider extends CommonMessageProvider {
+import type {IMessageProvider} from '$lib/shared/common/logic/commonMessageProvider';
+
+export class MessageProvider extends CommonMessageProvider implements IMessageProvider {
+    constructor(myAppIdentifier: AppIdentifier) {
+        super(myAppIdentifier, AllowedOriginUrls);
+    }
+
     async Init() {
-        window.addEventListener('message', async (event) => await this.MessageReceived(event));
+        await super.InitAsync();
     }
 
     public SendFullScreenRequest(useFullScreen: boolean) {
@@ -19,62 +26,28 @@ export class MessageProvider extends CommonMessageProvider {
             AppIdentifier.MainWebsite,
             AppIdentifier.TrabyterStaking,
             MessageType.FullScreenRequest,
-            message.toString(),
+            message,
+            false,
         );
     }
 
-    public async TestingEncryptedMessage() {
-        console.log('MessageProvider.TestingEncryptedMessage');
-        let publicKey = CryptoUtils.dicPublicKeys.TrabyterStaking;
-        if (!publicKey) {
-            console.error('TrabyterStaking public key not found');
-            return;
-        }
-        var jsonPublicKey: string = await CryptoUtils.publicKeyToJwkString(publicKey);
-        console.log('TestingEncryptedMessage - public key as JWK string:', jsonPublicKey);
-
-        let messageType: MessageType = MessageType.PublicKeyResponse;
-        const message = new ResponsePublicKeyMessage(AppIdentifier.TrabyterStaking, jsonPublicKey);
-
-        var messageRawData: MessageRawData =
-            await CryptoUtils.EncryptAndReturnAsRawMessageAsync<ResponsePublicKeyMessage>(
-                AppIdentifier.TrabyterStaking,
-                AppIdentifier.TrabyterStaking,
-                publicKey,
-                messageType,
-                message,
-            );
-
-        // Now decrypt the message to verify
-        var internalJsonString: string = await messageRawData.GetInternalDataStringAsync();
-        console.log('Decrypted internal JSON string:', internalJsonString);
-
-        const originalMessage: ResponsePublicKeyMessage = JSON.parse(internalJsonString);
-        console.log('Original Message after decryption:', originalMessage);
-    }
-
-    async MessageReceived(event: MessageEvent) {
+    public async MessageReceived(
+        targetIdentifier: AppIdentifier,
+        sourceIdentifier: AppIdentifier,
+        messageType: MessageType,
+        messageDataAsJsonString: string,
+    ): Promise<void> {
         try {
-            console.log('MessageProvider.MessageReceived', event);
+            console.log('sourceIdentifier:', sourceIdentifier);
+            console.log('targetIdentifier:', targetIdentifier);
 
-            // Validate the origin of the message
-            if (event.origin !== window.origin) {
-                console.warn('Received message from unknown origin:', event.origin);
+            if (targetIdentifier !== this.MyAppIdentifier) {
                 return;
             }
-            // if (event.data.type === 'REQUEST_DATA') {
-            //     // Respond with custom data
-            //     event.source.postMessage({ type: 'RESPONSE_DATA', requestId: event.data.requestId, payload: 'your data' }, event.origin);
-            // }
-            if (!event.data || !event.data.type || !event.data.data) {
-                console.warn('Received malformed message:', event.data);
-                return;
-            }
-            // if (event.data.type === MessageType.FullScreenRequest) {
-            //     const messageData = MessageRawData.fromString<RequestFullScreenMessage>(event.data.data);
-            //     console.log('Parsed MessageData:', messageData);
-            //     return;
-            // }
+
+            console.log('MessageType:', messageType);
+            console.log('MessageData as json string:');
+            console.log(messageDataAsJsonString);
         } catch (e) {
             console.error('Error processing received message:', e);
         }

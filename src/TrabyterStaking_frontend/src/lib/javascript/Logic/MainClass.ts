@@ -3,6 +3,7 @@ import {MessageProvider} from '$lib/javascript/Logic/messages/messageProvider';
 import {NftProvider} from '$lib/javascript/Logic/Nft/NftProvider';
 import {writable} from 'svelte/store';
 
+import {AppIdentifier} from '../../shared/common/abstractions/types/commonTypes';
 import {CryptoUtils} from '../../shared/common/crypto/cryptoutils';
 
 class InternalMainClass {
@@ -15,7 +16,7 @@ class InternalMainClass {
     constructor() {
         this.CryptoUtils = new CryptoUtils();
         this.NftProvider = NftProvider.getInstance();
-        this.MessageProvider = new MessageProvider();
+        this.MessageProvider = new MessageProvider(AppIdentifier.TrabyterStaking);
         this.SessionStorage = new SessionStorage();
     }
 
@@ -23,9 +24,8 @@ class InternalMainClass {
         if (this.#init_done) {
             return;
         }
-        await this.CryptoUtils.InitAsync();
-        await this.NftProvider.InitAsync();
         await this.MessageProvider.Init();
+        await this.NftProvider.InitAsync();
         await this.SessionStorage.Load();
         this.#init_done = true;
 

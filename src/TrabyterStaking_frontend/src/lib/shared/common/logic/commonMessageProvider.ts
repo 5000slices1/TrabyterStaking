@@ -1,58 +1,213 @@
-import {RequestPublicKeyMessage} from '$lib/shared/common/abstractions/messages/fromAny/requestPublicKeyMessage';
-import {RequestFullScreenMessage} from '$lib/shared/common/abstractions/messages/FromEmbeddedApp/requestFullScreenMessage';
 import {MessageRawData} from '$lib/shared/common/abstractions/messages/messageRawData';
-//import {browser} from '$app/environment';
 import {MessageType} from '$lib/shared/common/abstractions/messages/messagetype';
-import {AppIdentifier} from '$lib/shared/common/abstractions/types/commonTypes';
 
+import {RequestPublicKeyMessage} from '../abstractions/messages/fromAny/requestPublicKeyMessage';
+import {ResponsePublicKeyMessage} from '../abstractions/messages/fromAny/responsePublicKeyMessage';
+import {MessageCommon} from '../abstractions/messages/messageCommon';
+import {AppIdentifier} from '../abstractions/types/commonTypes';
 import {CryptoUtils} from '../crypto/cryptoutils';
 
+export interface IMessageProvider {
+    InitAsync(): Promise<void>;
+
+    MessageReceived(
+        targetIdentifier: AppIdentifier,
+        sourceIdentifier: AppIdentifier,
+        messageType: MessageType,
+        messageDataAsJsonString: string,
+    ): Promise<void>;
+}
+
+function isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
+
 export class CommonMessageProvider {
-    /// Sends a message to the parent window without using encryption
-    PostMessageToParent<T>(
+    public MyAppIdentifier: AppIdentifier;
+    private _allowedOriginUrls: string[];
+
+    constructor(myAppIdentifier: AppIdentifier, allowedOriginUrls: string[]) {
+        this.MyAppIdentifier = myAppIdentifier;
+        this._allowedOriginUrls = allowedOriginUrls;
+        if (isBrowser()) {
+            window.removeEventListener('message', async (event) => await this.MessageReceivedInternal(event));
+            window.addEventListener('message', async (event) => await this.MessageReceivedInternal(event));
+        }
+    }
+
+    public async InitAsync(): Promise<void> {
+        await CryptoUtils.InitAsync(this.MyAppIdentifier);
+    }
+
+    private async MessageReceivedInternal(event: MessageEvent): Promise<void> {
+        try {
+            console.log('MessageProvider.MessageReceived', event);
+
+            if (!this.isOriginAllowed(event.origin, this._allowedOriginUrls)) {
+                console.log('CommonMessageProvider.MessageReceived from origin: ' + event.origin);
+                console.log('Allowed origins are: ', this._allowedOriginUrls);
+                return;
+            }
+
+            // Validate the origin of the message
+            // if (event.origin !== window.origin) {
+            //     console.warn('Received message from unknown origin:', event.origin);
+            //     return;
+            // }
+            // if (event.data.type === 'REQUEST_DATA') {
+            //     // Respond with custom data
+            //     event.source.postMessage({ type: 'RESPONSE_DATA', requestId: event.data.requestId, payload: 'your data' }, event.origin);
+            // }
+            if (!event.data || !event.data.type || !event.data.data) {
+                console.warn('Received malformed message:', event.data);
+                return;
+            }
+            const messageDataOrNull: MessageRawData | null = await MessageRawData.fromString(event.data.data);
+            if (messageDataOrNull === null) {
+                console.error('Failed to parse MessageRawData from event data.');
+                return;
+            }
+            const messageData: MessageRawData = messageDataOrNull!;
+            console.log('Parsed MessageData:', messageData);
+
+            if (messageData.TargetIdentifier !== this.MyAppIdentifier) {
+                return;
+            }
+
+            if (messageData.Type === MessageType.PublicKeyResponse) {
+                const originalMessage: ResponsePublicKeyMessage = MessageCommon.fromString<ResponsePublicKeyMessage>(
+                    messageData.DataAsJsonStringOrEncryptedData,
+                )!;
+
+                console.log('OriginalMessage:', originalMessage);
+
+                const importedKey = await window.crypto.subtle.importKey(
+                    'jwk',
+                    originalMessage.publicKey as JsonWebKey,
+                    {name: 'RSA-OAEP', hash: 'SHA-256'},
+                    true,
+                    ['encrypt'],
+                );
+
+                // Add the imported public key to the dictionary
+                CryptoUtils.AddPublicKeyToDictionary(originalMessage.senderSource, importedKey);
+                return;
+            }
+            // if (event.data.type === MessageType.FullScreenRequest) {
+            //     const messageData = MessageRawData.fromString<RequestFullScreenMessage>(event.data.data);
+            //     console.log('Parsed MessageData:', messageData);
+            //     return;
+            // }
+            await this.MessageReceived(
+                messageData.TargetIdentifier,
+                messageData.SourceIdentifier,
+                messageData.Type,
+                messageData.DataAsJsonStringOrEncryptedData,
+            );
+        } catch (e) {
+            console.error('Error processing received message:', e);
+        }
+    }
+
+    protected async MessageReceived(
+        _targetIdentifier: AppIdentifier,
+        _sourceIdentifier: AppIdentifier,
+        _messageType: MessageType,
+        _messageDataAsJsonString: string,
+    ): Promise<void> {
+        // This method is intended to be overridden by derived classes
+    }
+
+    public async PostMessageToParent<T>(
         targetIdentifier: AppIdentifier,
         sourceIdentifier: AppIdentifier,
         messageType: MessageType,
         messageData: T,
+        encrypted: boolean = true,
         messageId: string | null = null,
     ) {
         try {
-            var messageAsString: string = JSON.stringify(messageData);
-            var messageRawData: MessageRawData = new MessageRawData(
+            if (!isBrowser()) {
+                console.warn('Not in browser environment. Cannot post message to parent.');
+                return;
+            }
+            if (!window.parent) {
+                console.warn('No parent window found. Cannot post message to parent.');
+                return;
+            }
+
+            let messageRawDataString: string = await this.GetRawMessageDataString(
                 targetIdentifier,
                 sourceIdentifier,
                 messageType,
-                messageAsString,
+                messageData,
+                encrypted,
                 messageId,
             );
 
-            // Send a message to the parent
-            //console.log('MessageProvider.SendMessageToHost', messageType, messageData);
-            //var messageDataString: string = messageData.toString();
-            //console.log('MessageProvider.SendMessageToHost string:', messageType, messageDataString);
-
-            window.parent.postMessage({type: messageType, data: messageRawData.toString()}, '*');
+            window.parent.postMessage({type: messageType, data: messageRawDataString}, '*');
         } catch (e) {
             console.error('Error sending message to host:', e);
         }
     }
 
-    // Sends a public key request message to the parent window
-    public SendPublicKeyRequest(targetIdentifier: AppIdentifier, sourceIdentifier: AppIdentifier) {
-        console.log('MessageProvider.SendPublicKeyRequest');
-
-        var message = new RequestPublicKeyMessage();
-
-        // Send to parent only
-        if (targetIdentifier === AppIdentifier.MainWebsite) {
-            this.PostMessageToParent(
+    /// Sends a message from parent to a specific embedded child app (iframe)
+    public async PostMessageToChild<T>(
+        targetIdentifier: AppIdentifier,
+        sourceIdentifier: AppIdentifier,
+        messageType: MessageType,
+        messageData: T,
+        encrypted: boolean = true,
+        messageId: string | null = null,
+    ) {
+        try {
+            let messageRawDataString: string = await this.GetRawMessageDataString(
                 targetIdentifier,
                 sourceIdentifier,
-                MessageType.PublicKeyRequest,
-                message.toString(),
+                messageType,
+                messageData,
+                encrypted,
+                messageId,
             );
-        } else {
-            console.error('SendPublicKeyRequest: Unsupported target identifier:', targetIdentifier);
+
+            // Find the iframe element for the target app identifier
+            const iframeSelector = `iframe[data-app-id="${targetIdentifier}"]`;
+            const iframe = document.querySelector(iframeSelector) as HTMLIFrameElement;
+
+            if (!iframe || !iframe.contentWindow) {
+                console.error('Child app iframe not found for identifier:', targetIdentifier);
+                return;
+            }
+
+            // Send a message to the child iframe
+            iframe.contentWindow.postMessage({type: messageType, data: messageRawDataString}, '*');
+        } catch (e) {
+            console.error('Error sending message to child app:', e);
+        }
+    }
+
+    private async GetRawMessageDataString<T>(
+        targetIdentifier: AppIdentifier,
+        sourceIdentifier: AppIdentifier,
+        messageType: MessageType,
+        messageData: T,
+        encrypted: boolean = true,
+        messageId: string | null = null,
+    ): Promise<string> {
+        try {
+            let messageRawData: MessageRawData = new MessageRawData();
+            await messageRawData.Init(
+                targetIdentifier,
+                sourceIdentifier,
+                messageType,
+                messageData,
+                encrypted,
+                messageId,
+            );
+            return messageRawData.toString();
+        } catch (e) {
+            console.error('Error serializing message data to string:', e);
+            return '';
         }
     }
 
@@ -62,11 +217,66 @@ export class CommonMessageProvider {
     //             messageData,
     //             messageType,
     //             id,
-    //         );
+    //         );PostMessageToChild
 
     //         window.parent.postMessage({type: messageType, data: messageRawData.toString()}, '*');
     //     } catch (e) {
     //         console.error('Error sending message to host:', e);
     //     }
     // }
+
+    // Sends a public key request message to the parent window
+    public async SendPublicKeyRequest(targetIdentifier: AppIdentifier) {
+        console.log('MessageProvider.SendPublicKeyRequest');
+
+        var message = new RequestPublicKeyMessage();
+
+        // Send to parent only
+        if (targetIdentifier === AppIdentifier.MainWebsite) {
+            await this.PostMessageToParent(
+                targetIdentifier,
+                this.MyAppIdentifier,
+                MessageType.PublicKeyRequest,
+                message,
+                false,
+            );
+        } else {
+            await this.PostMessageToChild(
+                targetIdentifier,
+                this.MyAppIdentifier,
+                MessageType.PublicKeyRequest,
+                message,
+                false,
+            );
+        }
+        console.error('SendPublicKeyRequest: Unsupported target identifier:', targetIdentifier);
+    }
+
+    // Add this new method for secure origin validation
+    public isOriginAllowed(eventOrigin: string, allowedOriginUrls: string[]): boolean {
+        if (!eventOrigin) {
+            return false;
+        }
+
+        try {
+            // Normalize the event origin
+            const eventUrl = new URL(eventOrigin);
+            const normalizedEventOrigin = `${eventUrl.protocol}//${eventUrl.host}`.toLowerCase();
+
+            // Check against each allowed origin
+            return allowedOriginUrls.some((allowedOrigin) => {
+                try {
+                    const allowedUrl = new URL(allowedOrigin);
+                    const normalizedAllowedOrigin = `${allowedUrl.protocol}//${allowedUrl.host}`.toLowerCase();
+                    return normalizedEventOrigin === normalizedAllowedOrigin;
+                } catch (error) {
+                    console.warn('Invalid allowed origin URL:', allowedOrigin);
+                    return false;
+                }
+            });
+        } catch (error) {
+            console.warn('Invalid event origin:', eventOrigin);
+            return false;
+        }
+    }
 }
