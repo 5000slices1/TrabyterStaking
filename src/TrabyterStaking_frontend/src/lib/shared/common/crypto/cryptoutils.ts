@@ -10,12 +10,16 @@ export class CryptoUtils {
     /// Dictionary to hold public keys of other apps and myself
     private static dicPublicKeys: Partial<Record<AppIdentifier, CryptoKey>> = {};
 
+    public static MyPublicKey: string;
+
     public static async InitAsync(myAppIdentifier: AppIdentifier): Promise<void> {
         if (!CryptoUtils.keyPair) {
             CryptoUtils.keyPair = await this.generateKeyPairAsync();
 
             //Add my own public key to the dictionary
             CryptoUtils.dicPublicKeys[myAppIdentifier] = CryptoUtils.keyPair.publicKey;
+
+            CryptoUtils.MyPublicKey = await this.publicKeyToJwkString(CryptoUtils.keyPair.publicKey);
         }
     }
 

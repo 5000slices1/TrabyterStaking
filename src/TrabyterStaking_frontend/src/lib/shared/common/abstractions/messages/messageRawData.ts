@@ -51,9 +51,9 @@ export class MessageRawData {
         } else {
             const jsonString: string = JSON.stringify(message);
             const encryptedData = await CryptoUtils.EncryptStringAsync(jsonString, targetIdentifier);
-            var result = new MessageRawData();
-            result.EncryptedKey = encryptedData.encryptedKey;
-            result.Iv = encryptedData.iv;
+
+            this.EncryptedKey = encryptedData.encryptedKey;
+            this.Iv = encryptedData.iv;
             this.DataAsJsonStringOrEncryptedData = encryptedData.encryptedData;
         }
     }
@@ -81,7 +81,10 @@ export class MessageRawData {
 
     public static async fromString(jsonString: string): Promise<MessageRawData | null> {
         try {
+            console.log('Parsing MessageRawData from string:');
+            console.log(jsonString);
             const rawData: MessageRawData = JSON.parse(jsonString);
+            console.log('Parsed rawData:', rawData);
 
             if (rawData == null) {
                 console.error('Parsed MessageRawData is null');

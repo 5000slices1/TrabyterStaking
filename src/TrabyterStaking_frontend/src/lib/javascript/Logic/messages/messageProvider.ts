@@ -27,7 +27,7 @@ export class MessageProvider extends CommonMessageProvider implements IMessagePr
             AppIdentifier.TrabyterStaking,
             MessageType.FullScreenRequest,
             message,
-            false,
+            true,
         );
     }
 
