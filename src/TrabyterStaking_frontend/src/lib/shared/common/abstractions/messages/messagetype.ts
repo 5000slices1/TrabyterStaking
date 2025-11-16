@@ -3,4 +3,6 @@ export enum MessageType {
     FullScreenRequest = 'FullScreenRequest',
     PublicKeyResponse = 'PublicKeyResponse',
     PublicKeyRequest = 'PublicKeyRequest',
+    RequestWalletStatus = 'RequestWalletStatus',
+    ResponseWalletStatus = 'ResponseWalletStatus',
 }
