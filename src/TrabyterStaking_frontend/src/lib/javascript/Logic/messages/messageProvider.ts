@@ -1,4 +1,3 @@
-import {AllowedOriginUrls, AppIdentifierToUrl} from '$lib/javascript/Abstractions/constants/globalConstants';
 import {ResponsePublicKeyMessage} from '$lib/shared/common/abstractions/messages/fromAny/responsePublicKeyMessage';
 import {RequestFullScreenMessage} from '$lib/shared/common/abstractions/messages/FromEmbeddedApp/requestFullScreenMessage';
 import {MessageRawData} from '$lib/shared/common/abstractions/messages/messageRawData';
@@ -7,6 +6,7 @@ import {MessageType} from '$lib/shared/common/abstractions/messages/messagetype'
 import {AppIdentifier} from '$lib/shared/common/abstractions/types/commonTypes';
 import {CryptoUtils} from '$lib/shared/common/crypto/cryptoutils';
 import {CommonMessageProvider} from '$lib/shared/common/logic/commonMessageProvider';
+import {AllowedOriginUrls, AppIdentifierToUrl} from '$lib/shared/common/security/trustedAppRegistry.js';
 
 import type {IMessageProvider} from '$lib/shared/common/logic/commonMessageProvider';
 

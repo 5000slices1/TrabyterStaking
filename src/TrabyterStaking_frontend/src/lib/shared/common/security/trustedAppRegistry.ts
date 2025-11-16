@@ -7,6 +7,22 @@ export interface TrustedAppConfig {
     description?: string;
 }
 
+const InProduction: boolean = false;
+export const TrabyterWebsiteUrl: string = InProduction
+    ? 'https://c42x7-waaaa-aaaap-qp3ba-cai.icp0.io'
+    : 'http://ucwa4-rx777-77774-qaada-cai.localhost:4943';
+
+export const TrabyterStakingAppUrl: string = InProduction
+    ? 'https://2mjwp-daaaa-aaaak-qimya-cai.icp0.io'
+    : 'http://uzt4z-lp777-77774-qaabq-cai.localhost:4943';
+
+export const AllowedOriginUrls: string[] = [TrabyterWebsiteUrl, TrabyterStakingAppUrl];
+
+export const AppIdentifierToUrl: Partial<Record<AppIdentifier, string>> = {
+    [AppIdentifier.MainWebsite]: TrabyterWebsiteUrl,
+    [AppIdentifier.TrabyterStaking]: TrabyterStakingAppUrl,
+};
+
 /**
  * Registry of trusted applications with their expected origins and public key fingerprints.
  * Prevents MITM attacks during key exchange by verifying received keys match expected values.
@@ -17,11 +33,7 @@ export class TrustedAppRegistry {
         [
             AppIdentifier.TrabyterStaking,
             {
-                allowedOrigins: [
-                    'http://ucwa4-rx777-77774-qaada-cai.localhost:4943',
-                    'https://staking.trabyter.com',
-                    'https://2mjwp-daaaa-aaaak-qimya-cai.icp0.io',
-                ],
+                allowedOrigins: [AppIdentifierToUrl[AppIdentifier.TrabyterStaking]!, 'https://staking.trabyter.com'],
                 // Note: Fingerprints should be generated once and stored securely
                 // To generate: await TrustedAppRegistry.generateKeyFingerprint(publicKey)
                 publicKeyFingerprint: undefined, // Set this after first key generation
@@ -32,11 +44,7 @@ export class TrustedAppRegistry {
         [
             AppIdentifier.MainWebsite,
             {
-                allowedOrigins: [
-                    'https://c42x7-waaaa-aaaap-qp3ba-cai.icp0.io',
-                    'https://trabyter.com',
-                    'http://u6s2n-gx777-77774-qaaba-cai.localhost:4943',
-                ],
+                allowedOrigins: [AppIdentifierToUrl[AppIdentifier.MainWebsite]!, 'https://trabyter.com'],
                 // Note: Fingerprints should be generated once and stored securely
                 // To generate: await TrustedAppRegistry.generateKeyFingerprint(publicKey)
                 publicKeyFingerprint: undefined, // Set this after first key generation
