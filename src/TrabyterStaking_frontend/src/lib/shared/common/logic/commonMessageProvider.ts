@@ -21,6 +21,7 @@ export interface IMessageProvider
         sourceIdentifier: AppIdentifier,
         messageType: MessageType,
         messageDataAsJsonString: string,
+        messageId: string | null
     ): Promise<void>;
 }
 
@@ -83,7 +84,7 @@ export class CommonMessageProvider
         const expirationTimeMs: bigint = BigInt(5 * 60 * 1000); // 5 minutes
         for (const [messageId, message] of this._immediateMessages)
         {
-            if (now - message.TimeStamp > expirationTimeMs)
+            if (now - BigInt(message.TimeStamp) > expirationTimeMs)
             {
                 this._immediateMessages.delete(messageId);
                 console.log(`Cleared old immediate message: ${messageId}`);
@@ -109,7 +110,7 @@ export class CommonMessageProvider
 
             if (!event.data || !event.data.type || !event.data.data)
             {
-                console.warn('Received malformed message:', event.data);
+                //console.warn('Received malformed message:', event.data);
                 return;
             }
             const messageDataOrNull: MessageRawData | null = await MessageRawData.fromString(event.data.data);
@@ -123,6 +124,8 @@ export class CommonMessageProvider
 
             if (messageData.TargetIdentifier !== this.MyAppIdentifier)
             {
+                console.warn('Message not intended for this app. Target:', messageData.TargetIdentifier,
+                    'This app:', this.MyAppIdentifier);
                 return;
             }
 
@@ -193,16 +196,19 @@ export class CommonMessageProvider
             // Now decrypt the message (signature verified, safe to decrypt)
             await messageData.DecryptData();
 
+            console.log('message data type;', messageData.Type);
             if (messageData.Type === MessageType.ResponseWalletStatus)
             {
                 const walletStatusMessage: ResponseWalletStatusMessage =
                     MessageCommon.fromString<ResponseWalletStatusMessage>(messageData.DataAsJsonStringOrEncryptedData)!;
+                console.log('Received wallet status message:', walletStatusMessage);
                 if (walletStatusMessage.ImmediateResponseRequested == true)
                 {
                     this._immediateMessages.set(messageData.MessageId, walletStatusMessage);
                     console.log('Stored immediate wallet status message:', messageData.MessageId);
+                    return;
                 }
-                return;
+
             }
 
             // Process authenticated and decrypted message
@@ -211,6 +217,7 @@ export class CommonMessageProvider
                 messageData.SourceIdentifier,
                 messageData.Type,
                 messageData.DataAsJsonStringOrEncryptedData,
+                messageData.MessageId
             );
         } catch (e)
         {
@@ -223,6 +230,7 @@ export class CommonMessageProvider
         _sourceIdentifier: AppIdentifier,
         _messageType: MessageType,
         _messageDataAsJsonString: string,
+        _messageId: string | null
     ): Promise<void>
     {
         // This method is intended to be overridden by derived classes

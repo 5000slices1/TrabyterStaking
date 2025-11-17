@@ -1,13 +1,14 @@
-import {AppIdentifier} from '../abstractions/types/commonTypes';
+import { AppIdentifier } from '../abstractions/types/commonTypes';
 
-export interface TrustedAppConfig {
+export interface TrustedAppConfig
+{
     allowedOrigins: string[];
     publicKeyFingerprint?: string; // SHA-256 hash of encryption public key
     signingKeyFingerprint?: string; // SHA-256 hash of signing public key
     description?: string;
 }
 
-const InProduction: boolean = false;
+const InProduction: boolean = true;
 export const TrabyterWebsiteUrl: string = InProduction
     ? 'https://c42x7-waaaa-aaaap-qp3ba-cai.icp0.io'
     : 'http://ucwa4-rx777-77774-qaada-cai.localhost:4943';
@@ -27,7 +28,8 @@ export const AppIdentifierToUrl: Partial<Record<AppIdentifier, string>> = {
  * Registry of trusted applications with their expected origins and public key fingerprints.
  * Prevents MITM attacks during key exchange by verifying received keys match expected values.
  */
-export class TrustedAppRegistry {
+export class TrustedAppRegistry
+{
     // Registry of trusted apps with their configurations
     private static trustedApps: Map<AppIdentifier, TrustedAppConfig> = new Map([
         [
@@ -58,15 +60,18 @@ export class TrustedAppRegistry {
     /**
      * Check if an app is trusted based on its identifier and origin
      */
-    public static isAppTrusted(appId: AppIdentifier, origin: string): boolean {
+    public static isAppTrusted(appId: AppIdentifier, origin: string): boolean
+    {
         const trustedApp = this.trustedApps.get(appId);
-        if (!trustedApp) {
+        if (!trustedApp)
+        {
             console.warn(`App ${appId} is not in trusted registry`);
             return false;
         }
 
         const isTrusted = trustedApp.allowedOrigins.includes(origin);
-        if (!isTrusted) {
+        if (!isTrusted)
+        {
             console.warn(`Origin ${origin} not allowed for app ${appId}`);
             console.warn(`Allowed origins:`, trustedApp.allowedOrigins);
         }
@@ -78,8 +83,10 @@ export class TrustedAppRegistry {
      * Generate SHA-256 fingerprint for a public key
      * Use this to generate fingerprints for trusted apps
      */
-    public static async generateKeyFingerprint(publicKey: CryptoKey): Promise<string> {
-        try {
+    public static async generateKeyFingerprint(publicKey: CryptoKey): Promise<string>
+    {
+        try
+        {
             const exported = await crypto.subtle.exportKey('jwk', publicKey);
             const keyString = JSON.stringify(exported);
             const encoder = new TextEncoder();
@@ -88,7 +95,8 @@ export class TrustedAppRegistry {
             const fingerprint = btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
 
             return `sha256:${fingerprint}`;
-        } catch (error) {
+        } catch (error)
+        {
             console.error('Error generating key fingerprint:', error);
             throw error;
         }
@@ -102,9 +110,11 @@ export class TrustedAppRegistry {
         appId: AppIdentifier,
         publicKey: CryptoKey,
         keyType: 'encryption' | 'signing',
-    ): Promise<boolean> {
+    ): Promise<boolean>
+    {
         const trustedApp = this.trustedApps.get(appId);
-        if (!trustedApp) {
+        if (!trustedApp)
+        {
             console.error(`App ${appId} not in trusted registry`);
             return false;
         }
@@ -113,7 +123,8 @@ export class TrustedAppRegistry {
             keyType === 'encryption' ? trustedApp.publicKeyFingerprint : trustedApp.signingKeyFingerprint;
 
         // If no fingerprint configured, allow (permissive mode for development)
-        if (!expectedFingerprint) {
+        if (!expectedFingerprint)
+        {
             console.warn(`⚠️ No ${keyType} key fingerprint configured for ${appId} - PERMISSIVE MODE`);
             console.warn(
                 `⚠️ Generate and store fingerprint for production: await TrustedAppRegistry.generateKeyFingerprint(key)`,
@@ -121,10 +132,12 @@ export class TrustedAppRegistry {
             return true;
         }
 
-        try {
+        try
+        {
             const actualFingerprint = await this.generateKeyFingerprint(publicKey);
 
-            if (actualFingerprint !== expectedFingerprint) {
+            if (actualFingerprint !== expectedFingerprint)
+            {
                 console.error(`❌ Public key fingerprint mismatch for app ${appId} (${keyType})`);
                 console.error(`Expected: ${expectedFingerprint}`);
                 console.error(`Received: ${actualFingerprint}`);
@@ -134,7 +147,8 @@ export class TrustedAppRegistry {
 
             console.log(`✅ ${keyType} key fingerprint verified for ${appId}`);
             return true;
-        } catch (error) {
+        } catch (error)
+        {
             console.error('Error verifying public key fingerprint:', error);
             return false;
         }
@@ -143,8 +157,10 @@ export class TrustedAppRegistry {
     /**
      * Add a new trusted app at runtime (use with caution)
      */
-    public static addTrustedApp(appId: AppIdentifier, config: TrustedAppConfig): void {
-        if (this.trustedApps.has(appId)) {
+    public static addTrustedApp(appId: AppIdentifier, config: TrustedAppConfig): void
+    {
+        if (this.trustedApps.has(appId))
+        {
             console.warn(`App ${appId} already exists in registry - updating`);
         }
         this.trustedApps.set(appId, config);
@@ -153,14 +169,16 @@ export class TrustedAppRegistry {
     /**
      * Get configuration for a trusted app
      */
-    public static getTrustedAppConfig(appId: AppIdentifier): TrustedAppConfig | undefined {
+    public static getTrustedAppConfig(appId: AppIdentifier): TrustedAppConfig | undefined
+    {
         return this.trustedApps.get(appId);
     }
 
     /**
      * Get list of all trusted app identifiers
      */
-    public static getTrustedAppIds(): AppIdentifier[] {
+    public static getTrustedAppIds(): AppIdentifier[]
+    {
         return Array.from(this.trustedApps.keys());
     }
 
@@ -172,17 +190,21 @@ export class TrustedAppRegistry {
         appId: AppIdentifier,
         publicKeyFingerprint?: string,
         signingKeyFingerprint?: string,
-    ): void {
+    ): void
+    {
         const config = this.trustedApps.get(appId);
-        if (!config) {
+        if (!config)
+        {
             console.error(`Cannot update fingerprints: App ${appId} not in registry`);
             return;
         }
 
-        if (publicKeyFingerprint) {
+        if (publicKeyFingerprint)
+        {
             config.publicKeyFingerprint = publicKeyFingerprint;
         }
-        if (signingKeyFingerprint) {
+        if (signingKeyFingerprint)
+        {
             config.signingKeyFingerprint = signingKeyFingerprint;
         }
 

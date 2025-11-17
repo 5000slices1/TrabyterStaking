@@ -1,18 +1,23 @@
-export class MessageCommon<T> {
+export class MessageCommon<T>
+{
     public ImmediateResponseRequested: boolean = false;
-    public TimeStamp: bigint = BigInt(Date.now());
+    public TimeStamp: number = Date.now();
 
-    constructor() {}
+    constructor() { }
 
-    public toString(): string {
+    public toString(): string
+    {
         return JSON.stringify(this as unknown as T);
     }
 
-    public static fromString<T>(jsonString: string): T | null {
-        try {
+    public static fromString<T>(jsonString: string): T | null
+    {
+        try
+        {
             const result: T = JSON.parse(jsonString);
             return result;
-        } catch (e) {
+        } catch (e)
+        {
             console.error('Error parsing JSON string:', e);
             return null;
         }

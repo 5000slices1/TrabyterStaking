@@ -112,6 +112,13 @@
         goto('/pages/stakingCreation');
     }
 
+    function navigateToWalletPage() {
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Wallet;
+        MainNavButtonStylingUpdate('navButtonWallet');
+        //goto('/pages/stakingCreation?canisterId=' + canisterId);
+        goto('/pages/wallet');
+    }
+
     // Main navigation button clicked
     function MainNavButtonStylingUpdate(id: string) {
         // set other buttons to not selected
@@ -221,6 +228,17 @@
                                                 <td
                                                     style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
                                                 ></td>
+                                                <td>
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonWallet"
+                                                        onclick={() => navigateToWalletPage()}>Wallet</button
+                                                    >
+                                                </td>
+                                                <td
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
+                                                ></td>
+
                                                 <td>
                                                     <button
                                                         class="main-header-button"
