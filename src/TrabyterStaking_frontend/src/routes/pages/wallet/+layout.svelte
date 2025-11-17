@@ -11,11 +11,11 @@
 <header>This is my wallet header</header>
 {@render data.children()}
 
-<p>{$UsersIdentity.IsConnected}</p>
-<p>{$UsersIdentity.AccountPrincipalText}</p>
-
 {#if $UsersIdentity.IsConnected}
     <p>Wallet connected: {$UsersIdentity.AccountPrincipalText}</p>
+    <p>Account ID: {$UsersIdentity.AccountId}</p>
+    <p>Wallet Name: {$UsersIdentity.Name}</p>
+    <p>Wallet Type: {$UsersIdentity.Type}</p>
 {:else}
     <p>Please connect your wallet</p>
 {/if}

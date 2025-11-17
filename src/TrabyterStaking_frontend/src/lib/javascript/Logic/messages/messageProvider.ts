@@ -94,6 +94,7 @@ export class MessageProvider extends CommonMessageProvider implements IMessagePr
                     instance.UsersIdentity.IsConnected = walletStatusMessage.IsConnected;
                     instance.UsersIdentity.AccountPrincipalText = walletStatusMessage.PrincipalText;
                     instance.UsersIdentity.Name = walletStatusMessage.WalletName;
+                    instance.UsersIdentity.AccountId = walletStatusMessage.AccountId;
 
                     // Return the same instance - Svelte will detect the change because update() was called
                     return instance;
