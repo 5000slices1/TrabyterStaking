@@ -1,6 +1,5 @@
 <script lang="ts">
-    //import './../../../app.css';
-    import Icon from '$lib/assets/icons/TraByterLogo.png';
+    console.log('Deposit page loaded');
 </script>
 
-<p>This is page Deposit. Coming Soon.</p>
+<p style="color:white;">This is page Deposit. Coming Soon.</p>

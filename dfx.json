@@ -1,15 +1,25 @@
 {
   "canisters": {
+    "StakingCanister": {
+      "declarations": {
+        "node_compatibility": true
+      },
+      "main": "src/Motoko/Canisters/StakingCanister/main.mo",
+      "type": "motoko",
+      "args": "--max-stable-pages 3276800"
+    },
     "TrabyterStaking_backend": {
       "declarations": {
         "node_compatibility": true
       },
-      "main": "src/TrabyterStaking_backend/main.mo",
-      "type": "motoko"
+      "main": "src/Motoko/Canisters/TrabyterStaking_backend/main.mo",
+      "type": "motoko",
+      "args": "--max-stable-pages 3276800"
     },
     "TrabyterStaking_frontend": {
       "dependencies": [
-        "TrabyterStaking_backend"
+        "TrabyterStaking_backend",
+        "StakingCanister"
       ],
       "source": [
         "src/TrabyterStaking_frontend/dist"
@@ -21,7 +31,7 @@
   "defaults": {
     "build": {
       "args": "",
-      "packtool": ""
+      "packtool": "mops sources"
     }
   },
   "output_env_file": ".env",

@@ -1,12 +1,13 @@
 <script lang="ts">
     //import adapter from '@sveltejs/adapter-static';
-    import {browser} from '$app/environment';
+    import {browser, version} from '$app/environment';
     import {onMount} from 'svelte';
-    import {GlobalTypes} from './../lib/global/GlobalTypes';
-    import {WalletTypes} from '$lib/identity/UsersIdentity';
-    import {version} from '$app/environment';
+    import {MainClass} from '../lib/javascript/Logic/MainClass';
+    import {ModelWalletTypes} from '$lib/javascript/Abstractions/Identity/ModelWalletTypes';
     import './../app.css';
+    import {MainNavigationUrls} from '$lib/javascript/Abstractions/sessionStorage/mainNavigationUrls';
     import {goto} from '$app/navigation';
+
     //import {page} from '$app/state';
     //import {Artemis} from './../artemis-web3-adapter/src/index.js';
 
@@ -16,90 +17,136 @@
     import {Console} from 'console';
 
     const canisterId = process.env.CANISTER_ID_TRABYTERSTAKING_FRONTEND;
-
     let data = $props();
-    //let artemis;
+    let headerButtonSpaceWidth = '0.8em';
+
     if (browser) {
         console.log(window.innerWidth);
     }
-    //import {Artemis} from 'artemis-web3-adapter';
-
-    //let artemis = new Artemis();
 
     onMount(async () => {
         console.log('the component has mounted');
         console.log('start init');
-        if (browser) {
-            if (GlobalTypes.IsInitDone()) {
-                return;
-            }
-            await InitAsync();
-
-            //await GlobalTypes.InitAsync();
-            //artemis = new Artemis();
-
-            //var artemisPath = './../artemis-web3-adapter/src/index.js';
-            // import(artemisPath).then((module) => {
-            //     artemis = new Artemis.Artemis();
-            // });
-            console.log('window');
-            console.log(window);
-        }
-        //await GlobalTypes.InitAsync();
+        await OnMountInit();
         console.log('start done');
     });
 
-    async function InitAsync() {
-        if (GlobalTypes.IsInitDone()) {
-            return;
-        }
-        await GlobalTypes.InitAsync();
-    }
-    async function WalletLoginPlug() {
-        if (browser) {
-            await GlobalTypes.IdentityProvider.Login(WalletTypes.plug);
-        }
+    if (browser) {
+        //let fsStored = sessionStorage.getItem('isFullScreen');
+        //console.log('fsStored', fsStored);
     }
 
-    async function WalletLogout() {
-        if (browser) {
-            await GlobalTypes.IdentityProvider.Logout();
+    async function OnMountInit() {
+        if (!browser) {
+            return;
         }
+
+        if ($MainClass.IsInitDone()) {
+            return;
+        }
+        await $MainClass.InitAsync();
+        //let fullScreen:boolean = $MainClass.SessionStorage.IsFullScreen;
+        if ($MainClass.SessionStorage.IsFullScreen) {
+            $MainClass.MessageProvider.SendFullScreenRequest(true);
+        }
+        // let mainNavigationUrls: MainNavigationUrls = $MainClass.SessionStorage.currentUrl;
+        // console.log('MainNavigationUrls', MainNavigationUrls);
+        // switch (mainNavigationUrls) {
+        //     case MainNavigationUrls.Home:
+        //         navigateToHomePage();
+        //         break;
+        //     case MainNavigationUrls.Deposit:
+        //         navigateToDepositPage();
+        //         break;
+        //     case MainNavigationUrls.Information:
+        //         navigateToInformationPage();
+        //         break;
+        //     case MainNavigationUrls.StakingPool:
+        //         navigateToStakingPoolPage();
+        //         break;
+        //     default:
+        //         navigateToHomePage();
+        //         break;
+        // }
+    }
+
+    // In full-screen the header of parent website (trabyter.com) is hidden and the content uses the full screen
+    function toggleFullScreenMode(event: Event) {
+        const checked = (event.target as HTMLInputElement).checked;
+        $MainClass.SessionStorage.IsFullScreen = checked;
+        $MainClass.MessageProvider.SendFullScreenRequest(checked);
+        console.log('Toggle state:', checked);
     }
 
     function navigateToHomePage() {
         console.log('navigateToHomePage');
-        goto('/?canisterId=' + canisterId);
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Home;
+        MainNavButtonStylingUpdate('navButtonHome');
+        //goto('/?canisterId=' + canisterId);
+        goto('/');
     }
 
     function navigateToDepositPage() {
-        console.log('navigateToDepositPage');
-        goto('/pages/deposit?canisterId=' + canisterId);
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Deposit;
+        MainNavButtonStylingUpdate('navButtonDeposit');
+        goto('/pages/deposit');
+        //goto('/pages/deposit?canisterId=' + canisterId);
     }
 
-    console.log('Hello from !');
-    function InitJavascript() {
-        console.log('Hello from Svelte!');
+    function navigateToInformationPage() {
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Information;
+        MainNavButtonStylingUpdate('navButtonInformation');
+        //goto('/pages/information?canisterId=' + canisterId);
+        goto('/pages/information');
+    }
+    function navigateToStakingPoolPage() {
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.StakingPool;
+        MainNavButtonStylingUpdate('navButtonStakingPool');
+        //goto('/pages/stakingpool?canisterId=' + canisterId);
+        goto('/pages/stakingpool');
+    }
+    function navigateToStakeItemCreationPage() {
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.StakingCreation;
+        MainNavButtonStylingUpdate('navButtonCreateStakingPoolItem');
+        //goto('/pages/stakingCreation?canisterId=' + canisterId);
+        goto('/pages/stakingCreation');
+    }
+
+    function navigateToWalletPage() {
+        $MainClass.SessionStorage.currentUrl = MainNavigationUrls.Wallet;
+        MainNavButtonStylingUpdate('navButtonWallet');
+        //goto('/pages/stakingCreation?canisterId=' + canisterId);
+        goto('/pages/wallet');
+    }
+
+    // Main navigation button clicked
+    function MainNavButtonStylingUpdate(id: string) {
+        // set other buttons to not selected
+        var buttons = document.getElementsByClassName('main-header-button');
+        for (var i = 0; i < buttons.length; i++) {
+            var currentId = buttons[i].getAttribute('id');
+            if (currentId != id) {
+                buttons[i].classList.remove('main-header-button-selected');
+            } else {
+                buttons[i].classList.add('main-header-button-selected');
+            }
+        }
     }
 </script>
 
-<div class="main-html-content">
+<div class="main-html-content" style="background-color: white;">
     <main class="main-body-content">
         <link
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
         />
         <div
-            style="min-height: calc(100vh - 2.1em);
-                   height:  calc(100vh - 2.1em);
+            style="min-height: calc(100vh - 2.1rem);
+                   height:  calc(100vh - 2.1rem);
     vertical-align: top;
     "
         >
-            <table
-                cellspacing="0"
-                cellpadding="0"
-                style="width: 100%;height:100%"
-            >
+            <table cellspacing="0" cellpadding="0" style="width: 100%;height:100%">
                 <tbody>
                     <tr>
                         <td style="height: 0.2rem;"> </td>
@@ -107,12 +154,12 @@
                     <tr>
                         <td>
                             <!-- Header section -->
-                            <header class="main-header">
-                                <div
-                                    class="main-header-div"
-                                    id="divMainMenu"
-                                    style="vertical-align: top;"
-                                >
+                            <header
+                                class="main-header"
+                                style="margin-left: 0.4rem;
+                             margin-right: 0.5rem;"
+                            >
+                                <div class="main-header-div" id="divMainMenu" style="vertical-align: top;">
                                     <table
                                         cellspacing="0"
                                         cellpadding="0"
@@ -121,174 +168,87 @@
                                     >
                                         <tbody>
                                             <tr>
+                                                <td style="width: 0.6em; min-width: 0.6em;"> </td>
                                                 <td>
-                                                    <div
-                                                        style="
-                                            padding-top: 0.1em;opacity: 0.85;"
-                                                    >
-                                                        <img
-                                                            src={IconTrabyter}
-                                                            width="74rem"
-                                                            height="68rem"
-                                                            class="main-header-image"
-                                                            alt=""
+                                                    <p style="color: white; font-size: 0.8rem;">Fullscreen</p>
+                                                    <label class="switch">
+                                                        <input
+                                                            type="checkbox"
+                                                            id="toggleSwitch"
+                                                            checked={$MainClass.SessionStorage.IsFullScreen}
+                                                            onchange={toggleFullScreenMode}
                                                         />
-                                                    </div>
+                                                        <span class="slider"></span>
+                                                    </label>
                                                 </td>
                                                 <td
-                                                    style="width: 0.6em; min-width: 0.6em;"
-                                                >
-                                                </td>
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
+                                                ></td>
                                                 <td>
                                                     <button
                                                         class="main-header-button"
                                                         id="navButtonHome"
-                                                        onclick={() =>
-                                                            navigateToHomePage()}
-                                                        >Home</button
+                                                        onclick={() => navigateToHomePage()}>Home</button
                                                     >
                                                 </td>
                                                 <td
-                                                    style="width: 1.6em; min-width: 1.6em;"
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
                                                 ></td>
 
                                                 <td>
                                                     <button
                                                         class="main-header-button"
-                                                        id="navButtonApps"
-                                                        >Staking-Pool</button
+                                                        id="navButtonStakingPool"
+                                                        onclick={() => navigateToStakingPoolPage()}>Staking-Pool</button
                                                     >
                                                 </td>
-
-                                                <!-- svelte-ignore element_invalid_self_closing_tag -->
                                                 <td
-                                                    style="width: 1.6em; min-width: 1.6em;"
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
                                                 ></td>
+
+                                                <td>
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonCreateStakingPoolItem"
+                                                        onclick={() => navigateToStakeItemCreationPage()}
+                                                        >Create Nft Staking</button
+                                                    >
+                                                </td>
+                                                <td
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
+                                                ></td>
+
                                                 <td>
                                                     <button
                                                         class="main-header-button"
                                                         id="navButtonDeposit"
-                                                        onclick={() =>
-                                                            navigateToDepositPage()}
-                                                        >Deposit</button
+                                                        onclick={() => navigateToDepositPage()}>Deposit</button
                                                     >
                                                 </td>
                                                 <td
-                                                    style="width: 1.6em; min-width: 1.6em;"
-                                                >
-                                                </td>
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
+                                                ></td>
                                                 <td>
                                                     <button
                                                         class="main-header-button"
-                                                        id="navButtonNews"
-                                                        >Information</button
+                                                        id="navButtonWallet"
+                                                        onclick={() => navigateToWalletPage()}>Wallet</button
                                                     >
                                                 </td>
                                                 <td
-                                                    style="width: 1.6em; min-width: 1.6em;"
-                                                >
-                                                </td>
-                                                <!-- <td>
-                    <button class="main-header-button" type="menu" id="navButtonWhitepaper">Whitepaper</button>
-                </td>
-                <td style="width: 1.6em; min-width: 1.6em;">
-                </td>
-                <td>
-                    <button class="main-header-button" type="menu" id="navButtonRoadmap">Roadmap</button>
-                </td> -->
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
+                                                ></td>
+
                                                 <td>
-                                                    <!-- #region Wallet connection dropdown - hidden for now, because no usage at the moment -->
-                                                    <div class="dropdown">
-                                                        <button
-                                                            id="buttonWalletDropDown"
-                                                            type="submit"
-                                                            class="walletLoginButton"
-                                                            >Wallet Connection</button
-                                                        >
-
-                                                        <div
-                                                            id="dropDownWalletMenu"
-                                                            class="wallet-control-not-logged-in"
-                                                        >
-                                                            <table
-                                                                cellspacing="0"
-                                                                cellpadding="0"
-                                                            >
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <button
-                                                                                id="loginStoic"
-                                                                                type="submit"
-                                                                                class="button-dropdownmenu"
-                                                                                onclick={InitJavascript}
-                                                                            >
-                                                                                <img
-                                                                                    src="../assets/icons/stoic.png"
-                                                                                    width="22em"
-                                                                                    height="22em"
-                                                                                    alt="stoic"
-                                                                                    style="float: left;margin-left: 0.4em;"
-                                                                                />
-                                                                                <div
-                                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
-                                                                                >
-                                                                                    Connect
-                                                                                    with
-                                                                                    Stoic
-                                                                                </div>
-                                                                            </button>
-                                                                        </td></tr
-                                                                    >
-
-                                                                    <tr>
-                                                                        <td>
-                                                                            <button
-                                                                                id="loginPlug"
-                                                                                type="submit"
-                                                                                class="button-dropdownmenu"
-                                                                                onclick={WalletLoginPlug}
-                                                                            >
-                                                                                <img
-                                                                                    src="../assets/icons/plug.jpg"
-                                                                                    alt="plug"
-                                                                                    width="22em"
-                                                                                    height="22em"
-                                                                                    style="float: left;margin-left: 0.4em;"
-                                                                                />
-                                                                                <div
-                                                                                    style="margin: auto;text-align: center;margin-top: 2px;"
-                                                                                >
-                                                                                    Connect
-                                                                                    with
-                                                                                    Plug
-                                                                                </div>
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>
-                                                                            <button
-                                                                                id="logout"
-                                                                                type="submit"
-                                                                                class="button-dropdownmenu"
-                                                                                onclick={WalletLogout}
-                                                                            >
-                                                                                <div
-                                                                                    style="margin: auto;text-align: right;margin-right: 10px;  margin-top: 0px;"
-                                                                                >
-                                                                                    Log
-                                                                                    out
-                                                                                </div>
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                    <!-- #endregion Wallet connection dropdown -->
+                                                    <button
+                                                        class="main-header-button"
+                                                        id="navButtonInformation"
+                                                        onclick={() => navigateToInformationPage()}>Information</button
+                                                    >
                                                 </td>
+                                                <td
+                                                    style="width: {headerButtonSpaceWidth}; min-width: {headerButtonSpaceWidth};"
+                                                ></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -303,108 +263,11 @@
                         <td>
                             <div
                                 id="divMainContent"
-                                style="width: 100%; height: 100%; margin-top: 0.4em;"
+                                style="width: 100%; height: 100%;
+                             margin-top: 0.0em;"
                             >
                                 {@render data.children()}
                             </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <!-- <footer>
-        <div class="footer-div" style="width: 100%;height: 5em;background-color:white;
-
-    ">
-        </div>
-    </footer> -->
-
-                            <footer
-                                id="mainpage_footer"
-                                class="footer"
-                                style="
-    font-size: 1.0em;width: calc(100% - 1em);
-    height:4em;margin-top:1em;
-    "
-                            >
-                                <div>
-                                    Join Community: <a
-                                        style="color:rgb(172, 101, 15);"
-                                        target="_blank"
-                                        href="https://oc.app/community/ovkev-xiaaa-aaaar-asorq-cai/channel/333479041001113364768524958478479859764/?ref=tzol4-lqaaa-aaaaf-aanaq-cai"
-                                        >OpenChat</a
-                                    >
-                                    <div class="col-sm-5">
-                                        <ul
-                                            class="social_icon"
-                                            style="margin-left:-3.4em;"
-                                        >
-                                            <li>
-                                                <a
-                                                    target="_blank"
-                                                    href="https://www.trabyter.com"
-                                                    >Trabyter.com</a
-                                                >
-                                            </li>
-                                            <li>
-                                                <a
-                                                    target="_blank"
-                                                    href="https://www.facebook.com/mysliceinfo"
-                                                    ><i class="fa fa-facebook-f"
-                                                    ></i></a
-                                                >
-                                            </li>
-                                            <li>
-                                                <a
-                                                    target="_blank"
-                                                    href="https://x.com/trabyter_apps"
-                                                    ><i class="fa fa-twitter"
-                                                    ></i></a
-                                                >
-                                            </li>
-                                            <li>
-                                                <a
-                                                    target="_blank"
-                                                    href="https://www.youtube.com/channel/UCErWBRjdOWo_hmHNqb4yxDg"
-                                                    ><i
-                                                        class="fa fa-youtube-play"
-                                                        aria-hidden="true"
-                                                    ></i></a
-                                                >
-                                            </li>
-                                            <li>
-                                                <a
-                                                    target="_blank"
-                                                    href="https://github.com/5000slices1?tab=repositories"
-                                                    ><i
-                                                        class="fa fa-github"
-                                                        aria-hidden="true"
-                                                    ></i></a
-                                                >
-                                            </li>
-                                            <li>
-                                                <a
-                                                    target="_blank"
-                                                    href="https://t.me/mysliceinfo"
-                                                    ><i
-                                                        class="fa fa-telegram"
-                                                        aria-hidden="true"
-                                                    ></i></a
-                                                >
-                                            </li>
-                                            <li>
-                                                <a
-                                                    target="_blank"
-                                                    href="https://www.instagram.com/5000slices"
-                                                    ><i
-                                                        class="fa fa-instagram"
-                                                        aria-hidden="true"
-                                                    ></i></a
-                                                >
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </footer>
                         </td>
                     </tr>
                     <tr style="height: 0.2em;"> </tr>

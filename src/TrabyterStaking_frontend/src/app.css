@@ -2,7 +2,7 @@
     font-family: 'Montserrat', sans-serif;
 
     scroll-behavior: smooth;
-    background-color: #0e0f2c;
+    background-color: #20214b;
     margin: 0;
     padding: 0;
 
@@ -13,7 +13,8 @@
 
 .main-body-content {
     height: 100%;
-    margin: 0em 0.4em 0em 0.4em;
+    /* margin: 0em 0.4em 0em 0.4em; */
+    margin: 0em 0em 0em 0em;
     /* margin: 1.2em 3.2em 0.4em 3.2em; */
     /* left: 0.5rm; */
 }
@@ -22,18 +23,22 @@
 .main-header {
     /* height: 17.2em; */
     height: auto;
+    min-height: 3.2rem;
     width: auto;
 }
 
 .main-header-div {
-    background-color: #55557b;
+    background-color: #36368f;
 
     width: 100%;
-    border-top-left-radius: 2.8rem;
-    border-top-right-radius: 2.8rem;
-    box-shadow:
-        0 0.2em 0.3em rgba(255, 254, 254, 0.25),
-        inset 0.4em 0.3em 0.6em rgba(255, 251, 251, 0.25);
+    border-top-left-radius: 0.8rem;
+    border-top-right-radius: 0.8rem;
+    border-bottom-left-radius: 0.8rem;
+    border-bottom-right-radius: 0.8rem;
+    border-color: #36368f;
+    border-width: 0.1em;
+    border-style: solid;
+    box-shadow: 0 0.2em 0.3em rgba(255, 254, 254, 0.25), inset 0.4em 0.3em 0.6em rgba(255, 251, 251, 0.25);
 }
 
 .main-header table {
@@ -60,7 +65,56 @@
     padding-right: 1em;
 }
 
+/* region toggle switch */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 3.5rem;
+    height: 1.4rem;
+    top: -0.4rem;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: background 0.3s;
+    border-radius: 1.4rem;
+}
+
+.slider:before {
+    position: absolute;
+    content: '';
+    height: 1.1rem;
+    width: 1.1rem;
+    left: 0.15rem;
+    bottom: 0.15rem;
+    background-color: white;
+    transition: transform 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4caf50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(2rem);
+}
+
 /* #region header buttons */
+
 .main-header-button,
 .walletLoginButton,
 .button-dropdownmenu {
@@ -80,14 +134,13 @@
 
     transition-duration: 0.4s;
     height: 2.5rem;
-    border-radius: 1.8em;
+    border-radius: 0.1em;
 
-    box-shadow:
-        0 0.2em 0.3em rgba(255, 254, 254, 0.05),
-        inset 0.2em 0.3em 0.4em rgba(255, 251, 251, 0.25);
+    box-shadow: 0 0.2em 0.3em rgba(255, 254, 254, 0.05), inset 0.2em 0.3em 0.4em rgba(255, 251, 251, 0.25);
 }
 
 .walletLoginButton {
+    display: none;
     width: 16em;
     border: 0.3em solid rgba(90, 11, 54, 0.8);
 }
@@ -112,8 +165,8 @@
 /* #region Wallet login control */
 
 .wallet-control-not-logged-in {
-    /* display: none; */
-    display: block;
+    display: none;
+    /* display: block; */
     position: absolute;
 
     text-align: end;
@@ -127,9 +180,7 @@
     border-bottom-left-radius: 1.8em;
     border-bottom-right-radius: 1.8em;
     /* box-shadow: 0 0.4em 0.6em rgba(255, 254, 254, 0.25), inset 0.4em 0.3em 0.6em rgba(255, 251, 251, 0.25); */
-    box-shadow:
-        0 0.2em 0.3em rgba(255, 254, 254, 0.25),
-        inset 0.2em 0.15em 0.3em rgba(255, 251, 251, 0.25);
+    box-shadow: 0 0.2em 0.3em rgba(255, 254, 254, 0.25), inset 0.2em 0.15em 0.3em rgba(255, 251, 251, 0.25);
 }
 
 .button-dropdownmenu {
@@ -152,7 +203,8 @@
 
 .dropdown {
     position: relative;
-    display: inline-block;
+    /* display: inline-block; */
+    display: none;
 }
 
 /* #endregion Wallet login control */
@@ -168,9 +220,7 @@ footer {
 
     color: #ffffff;
     border: 1px solid #000000;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 1px 2px rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.25);
     z-index: 10;
     position: block;
     bottom: 0em;
